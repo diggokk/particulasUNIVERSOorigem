@@ -2,21 +2,23 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universo de Partículas PRO Turbo - Edição Definitiva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Universo de Partículas PRO Turbo (Otimizado)</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
             touch-action: manipulation;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
         }
 
         canvas {
             display: block;
             width: 100vw;
             height: 100vh;
+            transition: transform 0.1s;
         }
 
         .mobile-controls {
@@ -32,18 +34,33 @@
         }
 
         .mobile-btn {
-            width: 55px;
-            height: 55px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             background: rgba(74, 0, 224, 0.9);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mobile-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(30deg);
+            transition: all 0.3s;
         }
 
         .mobile-btn:active {
@@ -51,7 +68,17 @@
             background: rgba(142, 45, 226, 0.9);
         }
 
-        /* Menu Hamburguer */
+        .mobile-btn:active::after {
+            left: 100%;
+            top: 100%;
+        }
+
+        .mobile-btn.active {
+            background: rgba(142, 45, 226, 0.9);
+            box-shadow: 0 0 15px rgba(142, 45, 226, 0.7),
+                        inset 0 0 10px rgba(255,255,255,0.3);
+        }
+
         #menu-toggle {
             position: fixed;
             top: 15px;
@@ -68,6 +95,12 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        #menu-toggle:hover {
+            background: rgba(74, 0, 224, 0.7);
         }
 
         #menu {
@@ -75,13 +108,15 @@
             top: 65px;
             right: 15px;
             z-index: 1000;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             border-radius: 10px;
             padding: 15px;
             color: white;
             display: none;
-            width: 250px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 280px;
+            box-shadow: 0 0 25px rgba(74, 0, 224, 0.5);
+            border: 1px solid rgba(74, 0, 224, 0.3);
+            backdrop-filter: blur(5px);
         }
 
         #menu h3 {
@@ -89,21 +124,63 @@
             color: #00F5A0;
             border-bottom: 1px solid #4A00E0;
             padding-bottom: 10px;
+            text-align: center;
+            font-size: 1.3em;
         }
 
         .menu-item {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(74, 0, 224, 0.1);
         }
 
         .menu-item:hover {
+            background: rgba(74, 0, 224, 0.3);
+            transform: translateX(5px);
+        }
+
+        .menu-icon {
+            font-size: 1.2em;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-text {
+            flex-grow: 1;
+        }
+
+        .menu-hotkey {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8em;
+        }
+
+        .menu-status {
             color: #00F5A0;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .menu-item.active {
+            background: rgba(74, 0, 224, 0.5);
+            box-shadow: inset 0 0 10px rgba(0, 245, 160, 0.3);
         }
 
         .menu-section {
             margin-bottom: 15px;
+        }
+
+        .menu-section h4 {
+            margin-bottom: 10px;
+            color: #8E2DE2;
+            font-size: 1.1em;
+            padding-left: 5px;
+            border-left: 3px solid #4A00E0;
         }
 
         #galaxy-map {
@@ -111,9 +188,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            padding: 20px;
-            border-radius: 10px;
+            background: rgba(0,0,0,0.95);
+            padding: 25px;
+            border-radius: 15px;
             color: white;
             z-index: 1000;
             display: none;
@@ -121,28 +198,79 @@
             max-width: 90%;
             max-height: 90%;
             overflow-y: auto;
+            box-shadow: 0 0 30px rgba(74, 0, 224, 0.5);
+            border: 1px solid rgba(74, 0, 224, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        #galaxy-map h2 {
+            color: #00F5A0;
+            margin-top: 0;
+            font-size: 1.8em;
+            text-shadow: 0 0 10px rgba(0, 245, 160, 0.5);
         }
 
         .galaxy {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .galaxy h3 {
+            margin: 0 0 8px 0;
+            color: white;
+            font-size: 1.3em;
+        }
+
+        .galaxy p {
+            margin: 8px 0;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .galaxy small {
+            display: block;
+            color: #ff5555;
+            font-size: 0.8em;
+            margin-top: 8px;
         }
 
         .galaxy.unlocked {
-            background: rgba(74, 0, 224, 0.5);
+            background: rgba(74, 0, 224, 0.2);
+            border-color: rgba(74, 0, 224, 0.5);
         }
 
         .galaxy.unlocked:hover {
-            background: rgba(74, 0, 224, 0.8);
-            transform: scale(1.05);
+            background: rgba(74, 0, 224, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
         }
 
         .galaxy.locked {
-            background: rgba(255,255,255,0.1);
+            background: rgba(50, 50, 50, 0.3);
             cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #close-galaxy-map {
+            background: linear-gradient(145deg, #8e2de2, #4a00e0);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        #close-galaxy-map:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
 
         #fps-counter {
@@ -154,6 +282,7 @@
             padding: 5px 10px;
             border-radius: 3px;
             font-family: monospace;
+            font-size: 12px;
         }
 
         #xp-bar-container {
@@ -161,20 +290,22 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 20px;
+            height: 25px;
             background: rgba(0,0,0,0.7);
             z-index: 50;
             display: flex;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 15px;
+            border-top: 1px solid rgba(74, 0, 224, 0.3);
         }
 
         #xp-bar {
-            height: 60%;
+            height: 70%;
             width: 0%;
             background: linear-gradient(90deg, #4A00E0, #8E2DE2);
             transition: width 0.3s;
             border-radius: 3px;
+            box-shadow: 0 0 10px rgba(74, 0, 224, 0.5);
         }
 
         #xp-text {
@@ -182,6 +313,7 @@
             margin-left: 10px;
             font-size: 12px;
             font-family: Arial, sans-serif;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         #health-bar-container {
@@ -189,12 +321,13 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            height: 15px;
-            width: 200px;
+            height: 18px;
+            width: 250px;
             background: rgba(0,0,0,0.7);
             z-index: 50;
             border-radius: 10px;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         #health-bar {
@@ -208,12 +341,13 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            height: 10px;
-            width: 150px;
+            height: 12px;
+            width: 200px;
             background: rgba(0,0,0,0.7);
             z-index: 50;
             border-radius: 5px;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         #bigbang-progress {
@@ -226,8 +360,7 @@
         .enemy {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, #ff0000, #800000);
-            box-shadow: 0 0 15px #ff0000;
+            box-shadow: 0 0 15px currentColor;
             z-index: 10;
             display: flex;
             align-items: center;
@@ -257,21 +390,76 @@
 
         #bigbang-btn {
             position: fixed;
-            bottom: 50px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 0, 255, 0.7);
-            border: 2px solid rgba(255,255,255,0.3);
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 65px;
+            border-radius: 30px;
+            background: linear-gradient(145deg, #8e2de2, #4a00e0);
+            border: none;
             color: white;
             font-size: 24px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 100;
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(142, 45, 226, 0.5),
+                        0 0 0 2px rgba(255, 255, 255, 0.1),
+                        inset 0 0 15px rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: none; /* Inicialmente escondido */
+        }
+
+        #bigbang-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            transition: all 0.3s;
+        }
+
+        #bigbang-btn:hover::before {
+            left: 100%;
+        }
+
+        #bigbang-btn:active {
+            transform: translateX(-50%) scale(0.95);
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.5),
+                        0 0 0 2px rgba(255, 255, 255, 0.1),
+                        inset 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        #bigbang-btn span {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #bigbang-btn .cooldown-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            width: 0%;
+            border-radius: 30px;
+            transition: width 0.1s linear;
         }
 
         .unlock-message {
@@ -294,22 +482,363 @@
             pointer-events: none;
             width: 80%;
             max-width: 400px;
+            backdrop-filter: blur(2px);
+        }
+
+        #skill-tree {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(74, 0, 224, 0.5);
+            border: 1px solid rgba(74, 0, 224, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        #stats-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 50;
+            border: 1px solid rgba(74, 0, 224, 0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            max-width: 180px;
+        }
+
+        .skill {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #4A00E0;
+        }
+
+        .skill.unlocked {
+            border-left-color: #00F5A0;
+        }
+
+        .skill.locked {
+            opacity: 0.6;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .skill.maxed {
+            border-left-color: gold;
+        }
+
+        .skill-cost {
+            color: #8E2DE2;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .skill-requires {
+            color: #FF5555;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .upgrade-btn {
+            background: linear-gradient(145deg, #8e2de2, #4a00e0);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upgrade-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(142, 45, 226, 0.5);
+        }
+
+        @keyframes pulse-ready {
+            0% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(142, 45, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0); }
+        }
+
+        .bigbang-ready {
+            animation: pulse-ready 2s infinite;
+        }
+
+        @keyframes slowmo {
+            from { filter: brightness(100%) sepia(0); }
+            to { filter: brightness(150%) sepia(1); }
+        }
+
+        .game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, 
+                rgba(139, 0, 139, 0.9) 0%, 
+                rgba(0, 0, 80, 0.95) 100%);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .game-over-title {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #ff00ff, 
+                         0 0 40px #00ffff;
+            animation: pulse 2s infinite alternate;
+        }
+
+        .game-over-stats {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 30px rgba(142, 45, 226, 0.5);
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #ff00ff, #00ffff);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5),
+                        inset 0 0 10px rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.8),
+                        inset 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .big-bang-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 0 0 10px #ff00ff, 
+                         0 0 20px #00ffff,
+                         0 0 30px #ffffff;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.5s;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .supernova {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255,255,255,0.8) 0%, 
+                rgba(255,200,0,0.7) 20%, 
+                rgba(255,0,100,0.6) 40%, 
+                rgba(100,0,255,0.4) 60%, 
+                rgba(0,0,0,0) 80%);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .shockwave {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes supernova-explosion {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        @keyframes shockwave {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; width: 10px; height: 10px; }
+            100% { transform: translate(-50%, -50%) scale(20); opacity: 0; width: 100px; height: 100px; }
+        }
+
+        @keyframes cosmic-flash {
+            0% { background-color: rgba(255, 255, 255, 0); }
+            50% { background-color: rgba(255, 255, 255, 0.8); }
+            100% { background-color: rgba(255, 255, 255, 0); }
+        }
+
+        .camera-shake {
+            animation: cameraShake 0.5s linear infinite;
+        }
+
+        @keyframes cameraShake {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-10px, -10px); }
+            20%, 40%, 60%, 80% { transform: translate(10px, 10px); }
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .bigbang-level-requirement {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: gold;
+            font-size: 14px;
+            text-shadow: 0 0 5px black;
+        }
+
+        .quest-panel {
+            position: fixed;
+            top: 150px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            max-width: 200px;
+            border-left: 3px solid #4A00E0;
+            z-index: 50;
+        }
+
+        .quest-item {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 4px;
+            background: rgba(74, 0, 224, 0.2);
+        }
+
+        .quest-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            margin-top: 3px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .quest-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00F5A0, #4A00E0);
+            width: 0%;
+            transition: width 0.3s;
         }
 
         @media (max-width: 768px) {
             .mobile-controls { display: flex; }
             #menu {
-                width: 80%;
+                width: 85%;
                 right: 10px;
                 left: 10px;
                 margin: 0 auto;
             }
             #bigbang-btn {
-                bottom: 120px;
-                right: 15px;
-                width: 50px;
+                width: 180px;
                 height: 50px;
                 font-size: 20px;
+                bottom: 15px;
+            }
+            #health-bar-container {
+                width: 200px;
+                height: 15px;
+            }
+            #bigbang-cooldown {
+                width: 180px;
+            }
+            #xp-bar-container {
+                height: 20px;
+                padding: 0 10px;
+            }
+            #xp-text {
+                font-size: 11px;
+            }
+            .game-over-title {
+                font-size: 3rem;
+            }
+            .restart-btn {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+            }
+            .big-bang-message {
+                font-size: 2rem;
+            }
+            #stats-panel {
+                top: 60px;
+                left: 10px;
+                max-width: 160px;
+                font-size: 11px;
+            }
+            .quest-panel {
+                top: 220px;
+                left: 10px;
+                max-width: 180px;
             }
         }
     </style>
@@ -322,25 +851,60 @@
 
         <div class="menu-section">
             <h4>Controles</h4>
-            <div class="menu-item" id="menu-attract">🧲 Atração</div>
-            <div class="menu-item" id="menu-repel">💥 Repulsão</div>
-            <div class="menu-item" id="menu-vortex">🌪️ Vórtice</div>
+            <div class="menu-item" data-action="setMode" data-mode="attract">
+                <span class="menu-icon">🧲</span> 
+                <span class="menu-text">Atração</span>
+                <span class="menu-hotkey">(1)</span>
+            </div>
+            <div class="menu-item" data-action="setMode" data-mode="repel">
+                <span class="menu-icon">💥</span> 
+                <span class="menu-text">Repulsão</span>
+                <span class="menu-hotkey">(2)</span>
+            </div>
+            <div class="menu-item" data-action="setMode" data-mode="vortex">
+                <span class="menu-icon">🌪️</span> 
+                <span class="menu-text">Vórtice</span>
+                <span class="menu-hotkey">(3)</span>
+            </div>
         </div>
 
         <div class="menu-section">
             <h4>Modos</h4>
-            <div class="menu-item" id="menu-coop">🔵 Cooperativo: OFF</div>
-            <div class="menu-item" id="menu-show-galaxies">🌌 Galáxias</div>
+            <div class="menu-item" data-action="toggleCoop">
+                <span class="menu-icon">👥</span> 
+                <span class="menu-text">Modo Cooperativo</span>
+                <span class="menu-status" id="coop-status">OFF</span>
+            </div>
+            <div class="menu-item" data-action="showGalaxies">
+                <span class="menu-icon">🌌</span> 
+                <span class="menu-text">Galáxias</span>
+            </div>
+            <div class="menu-item" data-action="showSkills">
+                <span class="menu-icon">🌟</span> 
+                <span class="menu-text">Habilidades</span>
+            </div>
         </div>
 
         <div class="menu-section">
             <h4>Sistema</h4>
-            <div class="menu-item" id="menu-reset">🔄 Reiniciar</div>
+            <div class="menu-item" data-action="resetGame">
+                <span class="menu-icon">🔄</span> 
+                <span class="menu-text">Reiniciar Jogo</span>
+            </div>
+            <div class="menu-item" data-action="toggleSound">
+                <span class="menu-icon">🔊</span> 
+                <span class="menu-text">Som</span>
+                <span class="menu-status" id="sound-status">ON</span>
+            </div>
         </div>
     </div>
 
     <!-- Botão Big Bang -->
-    <div id="bigbang-btn" title="Big Bang (Espaço)">💥</div>
+    <div id="bigbang-btn">
+        <span>💥 BIG BANG</span>
+        <div class="cooldown-overlay"></div>
+        <div class="bigbang-level-requirement" id="bigbang-requirement"></div>
+    </div>
 
     <!-- Controles mobile -->
     <div class="mobile-controls">
@@ -356,46 +920,118 @@
         <button class="mobile-btn" id="mobileVortexP2">🌪️</button>
     </div>
 
+    <!-- Mapa Galáctico -->
     <div id="galaxy-map">
         <h2>Mapa Galáctico</h2>
         <div id="galaxies-list"></div>
         <button id="close-galaxy-map">Fechar</button>
     </div>
 
-    <div id="fps-counter">FPS: 60</div>
+    <!-- Árvore de Habilidades -->
+    <div id="skill-tree">
+        <h2>Árvore de Habilidades</h2>
+        <div id="skills-list"></div>
+        <button id="close-skill-tree">Fechar</button>
+    </div>
 
+    <!-- Painel de Missões -->
+    <div id="quest-panel" class="quest-panel">
+        <h4>Missões</h4>
+        <div id="quests-container"></div>
+    </div>
+
+    <!-- Painel de Estatísticas -->
+    <div id="stats-panel">
+        <div>Nível: <span id="stat-level">1</span></div>
+        <div>XP: <span id="stat-xp">0/100</span></div>
+        <div>Partículas: <span id="stat-particles">0</span></div>
+        <div>Inimigos: <span id="stat-enemies">0</span></div>
+        <div>Onda: <span id="stat-wave">1</span></div>
+    </div>
+
+    <!-- Elementos de UI -->
+    <div id="fps-counter">FPS: 60</div>
     <div id="health-bar-container">
         <div id="health-bar"></div>
     </div>
-
     <div id="xp-bar-container">
         <div id="xp-bar"></div>
         <div id="xp-text">0/100 XP (Nível 1)</div>
     </div>
-
     <div id="bigbang-cooldown">
         <div id="bigbang-progress"></div>
     </div>
 
+    <!-- Tela de Game Over -->
+    <div id="game-over-screen" class="game-over-screen">
+        <div class="stars" id="game-over-stars"></div>
+        <h1 class="game-over-title">GAME OVER</h1>
+        
+        <div class="game-over-stats">
+            <h2>Estatísticas da Partida</h2>
+            <p>Nível alcançado: <span id="go-level">1</span></p>
+            <p>Onda alcançada: <span id="go-wave">1</span></p>
+            <p>Partículas coletadas: <span id="go-particles">0</span></p>
+            <p>Inimigos derrotados: <span id="go-enemies">0</span></p>
+        </div>
+        
+        <button class="restart-btn" id="restart-btn">Reiniciar Jogo</button>
+    </div>
+
+    <!-- Efeitos do Big Bang -->
+    <div id="big-bang-message" class="big-bang-message">O universo irá recomeçar...</div>
+    <div id="supernova" class="supernova"></div>
+    <div id="shockwave" class="shockwave"></div>
+
     <canvas id="canvas"></canvas>
 
     <script>
-        // Configurações do jogo
+        // =============================================
+        // CONFIGURAÇÕES DO JOGO (TODAS AS MELHORIAS)
+        // =============================================
         const config = {
-            particleCount: 200,
+            particleCount: 150,
             mouseRadius: 150,
-            mode: 'normal',
             galaxies: {
                 unlocked: ['classic'],
-                current: 'classic'
+                current: 'classic',
+                list: {
+                    classic: {
+                        name: "Clássico",
+                        description: "O universo original de partículas",
+                        unlockCondition: "Inicial",
+                        particleColorRange: { h: [0, 360], s: [80, 90], l: [50, 70] },
+                        background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)'
+                    },
+                    neon: {
+                        name: "Neon",
+                        description: "Cores vibrantes e partículas brilhantes",
+                        unlockCondition: "Alcançar nível 5",
+                        particleColorRange: { h: [280, 320], s: [100, 100], l: [60, 80] },
+                        background: 'radial-gradient(ellipse at bottom, #0f0c29 0%, #302b63 50%, #24243e 100%)'
+                    },
+                    fire: {
+                        name: "Inferno",
+                        description: "Partículas flamejantes e inimigos furiosos",
+                        unlockCondition: "Derrotar 50 inimigos",
+                        particleColorRange: { h: [10, 40], s: [80, 100], l: [50, 70] },
+                        background: 'radial-gradient(ellipse at bottom, #200122 0%, #6f0000 100%)'
+                    }
+                }
             },
             xp: 0,
             level: 1,
             power: 1,
             health: 100,
             maxHealth: 100,
-            bigBangCooldown: 0,
-            bigBangMaxCooldown: 300,
+            bigBang: {
+                unlocked: false,
+                availableEvery: 15,
+                nextUnlockLevel: 15,
+                cooldown: 0,
+                maxCooldown: 300,
+                active: false
+            },
             isBigBangActive: false,
             players: [
                 {
@@ -405,10 +1041,22 @@
                     mode: 'normal',
                     color: '#4A00E0',
                     radius: 150,
+                    size: 30,
+                    face: "🐶",
+                    faceSize: 28,
                     power: 1,
                     health: 100,
-                    face: "🐶",
-                    active: true
+                    maxHealth: 100,
+                    active: true,
+                    lastModeChange: 0,
+                    damage: 0.5,
+                    skills: {
+                        attractRadius: 1,
+                        vortexPower: 1,
+                        doubleVortex: false,
+                        healthBoost: 1,
+                        bigBangPower: 1
+                    }
                 },
                 {
                     id: 2,
@@ -417,969 +1065,1237 @@
                     mode: 'normal',
                     color: '#00F5A0',
                     radius: 150,
+                    size: 30,
+                    face: "🐱",
+                    faceSize: 28,
                     power: 1,
                     health: 100,
-                    face: "🐱",
-                    active: false
+                    maxHealth: 100,
+                    active: false,
+                    lastModeChange: 0,
+                    damage: 0.5,
+                    skills: {
+                        attractRadius: 1,
+                        vortexPower: 1,
+                        doubleVortex: false,
+                        healthBoost: 1,
+                        bigBangPower: 1
+                    }
                 }
             ],
             coopMode: false,
-            achievements: {
-                particleEater: { unlocked: false, count: 0, required: 50 },
-                galaxyExplorer: { unlocked: false, count: 0, required: 3 },
-                enemyDestroyer: { unlocked: false, count: 0, required: 100 }
-            },
-            skills: [
-                { id: 'attract_radius', name: "Raio Ampliado", level: 0, max: 5, effect: "Aumenta o raio de atração em 20%", cost: 2, unlocked: true },
-                { id: 'vortex_power', name: "Vórtice Poderoso", level: 0, max: 3, effect: "Aumenta força do vórtice em 30%", cost: 3 },
-                { id: 'double_vortex', name: "Vórtice Duplo", level: 0, max: 1, effect: "Cria um segundo vórtice", cost: 5 },
-                { id: 'health_boost', name: "Vitalidade", level: 0, max: 3, effect: "Aumenta vida máxima em 15%", cost: 2 },
-                { id: 'bigbang_power', name: "Big Bang+", level: 0, max: 2, effect: "Aumenta poder do Big Bang", cost: 4 }
-            ],
-            currentMission: null,
-            missionProgress: 0,
+            soundEnabled: true,
+            gamePaused: false,
             wave: {
                 number: 1,
                 enemiesToSpawn: 5,
                 spawned: 0,
-                timer: 0
+                timer: 0,
+                update: function() {
+                    if(this.spawned < this.enemiesToSpawn && this.timer++ > 60) {
+                        spawnEnemy();
+                        this.spawned++;
+                        this.timer = 0;
+                    }
+
+                    if(enemies.length === 0 && this.spawned >= this.enemiesToSpawn) {
+                        this.number++;
+                        this.enemiesToSpawn = 5 + this.number * 2;
+                        this.spawned = 0;
+                        showUnlockMessage(`Onda ${this.number} começando!`);
+                        updateStatsPanel();
+                        updateQuest('wave5', this.number);
+                    }
+                }
             },
             particlesAbsorbed: 0,
             enemiesDestroyed: 0,
             gameTime: 0,
-            isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+            comboCount: 0,
+            lastAbsorptionTime: 0,
+            screenShakeIntensity: 0,
+            enemySystem: {
+                spawnRate: 180,
+                baseHealth: 3,
+                baseSize: 20,
+                eliteSizeMultiplier: 1.3,
+                healthIncreasePerLevel: 0.3,
+                types: {
+                    normal: { 
+                        chance: 0.5, 
+                        speed: 2.0, 
+                        behavior: 'wander', 
+                        face: [">:(", "X_X", ">_<", ":O"],
+                        color: '#FF5555'
+                    },
+                    hunter: { 
+                        chance: 0.3, 
+                        speed: 3.0, 
+                        behavior: 'hunt', 
+                        face: ["ಠ_ಠ", "◉_◉", "⊙_⊙", "⚆_⚆"],
+                        color: '#FF0000',
+                        huntRadius: 300
+                    },
+                    cosmic: { 
+                        chance: 0.15, 
+                        speed: 1.8, 
+                        behavior: 'teleport', 
+                        face: ["☄️", "🌌", "🌠", "✨"], 
+                        special: 'shield',
+                        color: '#00AAFF',
+                        teleportChance: 0.008
+                    },
+                    ancient: { 
+                        chance: 0.05, 
+                        speed: 1.0, 
+                        behavior: 'orbit', 
+                        face: ["👁️", "🜏", "⚚", "♆"], 
+                        special: 'healer',
+                        color: '#AA00FF',
+                        orbitDistance: 100
+                    }
+                },
+                eliteMultiplier: 1.5,
+                blackHoleChance: 0.02
+            },
+            quests: {
+                active: [
+                    { id: 'absorb100', target: 100, current: 0, reward: 50, title: "Absorver 100 partículas" },
+                    { id: 'defeat20', target: 20, current: 0, reward: 100, title: "Derrotar 20 inimigos" },
+                    { id: 'wave5', target: 5, current: 1, reward: 200, title: "Alcançar onda 5" }
+                ],
+                completed: []
+            },
+            soundEffects: {
+                absorb: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3'),
+                enemyDefeat: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3'),
+                levelUp: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3'),
+                bigBang: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-big-explosion-2814.mp3'),
+                gameOver: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3')
+            },
+            skills: {
+                unlocked: [],
+                tree: {
+                    attractRadius: { 
+                        name: "Raio de Atração", 
+                        cost: 2, 
+                        maxLevel: 5, 
+                        effect: "Aumenta o raio de atração em 20% por nível",
+                        currentLevel: 0 
+                    },
+                    vortexPower: { 
+                        name: "Poder do Vórtice", 
+                        cost: 3, 
+                        maxLevel: 3, 
+                        effect: "Aumenta a força do vórtice em 30% por nível",
+                        currentLevel: 0 
+                    },
+                    healthBoost: { 
+                        name: "Vitalidade", 
+                        cost: 1, 
+                        maxLevel: 10, 
+                        effect: "Aumenta saúde máxima em 10% por nível",
+                        currentLevel: 0 
+                    },
+                    bigBangPower: { 
+                        name: "Big Bang Plus", 
+                        cost: 5, 
+                        maxLevel: 2, 
+                        effect: "Aumenta o XP ganho com Big Bang em 50% por nível",
+                        currentLevel: 0 
+                    },
+                    particleMastery: { 
+                        name: "Domínio de Partículas", 
+                        cost: 4, 
+                        maxLevel: 3, 
+                        effect: "Partículas dão 20% mais XP",
+                        currentLevel: 0,
+                        requires: ["attractRadius:3"] 
+                    }
+                }
+            },
+            skillPoints: 0
         };
 
-        // Sistema de fila de mensagens
-        const messageQueue = [];
-        let isShowingMessage = false;
-
-        // Ajuste para dispositivos móveis
-        if(config.isMobile) {
-            config.particleCount = Math.floor(config.particleCount * 0.6);
-        }
-
-        // Inicialização do canvas
+        // =============================================
+        // VARIÁVEIS GLOBAIS
+        // =============================================
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Partículas
         let particles = [];
+        let enemies = [];
+        let lastUpdateIndex = 0;
+        let lastTime = 0;
+        let fps = 60;
+        let fpsLastChecked = 0;
+        let frameCount = 0;
+        let gameLoopRunning = false;
+
+        // =============================================
+        // FUNÇÕES DO JOGO (TODAS AS MELHORIAS)
+        // =============================================
+
+        // 1. SISTEMA DE INIMIGOS
+        function spawnEnemy() {
+            try {
+                // Seleciona tipo de inimigo baseado nas chances
+                let random = Math.random();
+                let typeKey = 'normal';
+                let cumulativeChance = 0;
+                
+                for (const [key, type] of Object.entries(config.enemySystem.types)) {
+                    cumulativeChance += type.chance;
+                    if (random <= cumulativeChance) {
+                        typeKey = key;
+                        break;
+                    }
+                }
+                
+                const type = config.enemySystem.types[typeKey];
+                const isElite = Math.random() < 0.1;
+                
+                const enemy = {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    type: typeKey,
+                    health: config.enemySystem.baseHealth + 
+                           (config.wave.number * config.enemySystem.healthIncreasePerLevel),
+                    speed: type.speed * (isElite ? config.enemySystem.eliteMultiplier : 1),
+                    face: type.face[Math.floor(Math.random() * type.face.length)],
+                    isElite,
+                    behavior: type.behavior,
+                    color: type.color,
+                    size: config.enemySystem.baseSize * (isElite ? config.enemySystem.eliteSizeMultiplier : 1)
+                };
+                
+                // Adiciona propriedades específicas do tipo
+                if (typeKey === 'hunter') enemy.huntRadius = type.huntRadius;
+                if (typeKey === 'cosmic') enemy.teleportChance = type.teleportChance;
+                if (typeKey === 'ancient') enemy.orbitDistance = type.orbitDistance;
+                
+                enemies.push(enemy);
+                updateStatsPanel();
+                return enemy;
+            } catch (error) {
+                console.error("Erro ao spawnar inimigo:", error);
+                return null;
+            }
+        }
+
+        function updateEnemies(deltaTime) {
+            const player = config.players[0];
+            
+            enemies.forEach(enemy => {
+                // Comportamento baseado no tipo
+                switch(enemy.behavior) {
+                    case 'hunt':
+                        // Persegue o jogador apenas dentro do raio de detecção
+                        const dx = player.x - enemy.x;
+                        const dy = player.y - enemy.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        
+                        if (dist > 0 && dist < enemy.huntRadius) {
+                            enemy.x += (dx / dist) * enemy.speed * (deltaTime / 16.67);
+                            enemy.y += (dy / dist) * enemy.speed * (deltaTime / 16.67);
+                        } else {
+                            // Movimento aleatório quando não está perseguindo
+                            enemy.x += (Math.random() - 0.5) * enemy.speed * 0.5 * (deltaTime / 16.67);
+                            enemy.y += (Math.random() - 0.5) * enemy.speed * 0.5 * (deltaTime / 16.67);
+                        }
+                        break;
+                        
+                    case 'teleport':
+                        // Movimento normal com chance de teletransporte
+                        enemy.x += (Math.random() - 0.5) * enemy.speed * (deltaTime / 16.67);
+                        enemy.y += (Math.random() - 0.5) * enemy.speed * (deltaTime / 16.67);
+                        
+                        if (Math.random() < enemy.teleportChance) {
+                            enemy.x = Math.random() * canvas.width;
+                            enemy.y = Math.random() * canvas.height;
+                        }
+                        break;
+                        
+                    case 'orbit':
+                        // Orbita o jogador mantendo distância
+                        const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                        const targetX = player.x + Math.cos(angle + Math.PI/2) * enemy.orbitDistance;
+                        const targetY = player.y + Math.sin(angle + Math.PI/2) * enemy.orbitDistance;
+                        
+                        enemy.x += (targetX - enemy.x) * 0.05 * (deltaTime / 16.67);
+                        enemy.y += (targetY - enemy.y) * 0.05 * (deltaTime / 16.67);
+                        break;
+                        
+                    default: // 'wander'
+                        // Movimento aleatório mais suave
+                        enemy.x += (Math.random() - 0.5) * enemy.speed * (deltaTime / 16.67);
+                        enemy.y += (Math.random() - 0.5) * enemy.speed * (deltaTime / 16.67);
+                }
+                
+                // Mantém dentro da tela com margem
+                enemy.x = Math.max(10, Math.min(canvas.width - 10, enemy.x));
+                enemy.y = Math.max(10, Math.min(canvas.height - 10, enemy.y));
+                
+                // Verifica colisão com jogador
+                const distToPlayer = Math.sqrt(
+                    Math.pow(enemy.x - player.x, 2) + 
+                    Math.pow(enemy.y - player.y, 2)
+                );
+                
+                if (distToPlayer < (player.size + enemy.size) * 0.6) {
+                    player.health -= 0.3 * (deltaTime / 16.67);
+                    updateHealthBar();
+                    
+                    // Feedback visual
+                    if (Date.now() % 200 < 50) {
+                        document.getElementById('health-bar').style.opacity = '0.5';
+                    } else {
+                        document.getElementById('health-bar').style.opacity = '1';
+                    }
+
+                    // Verifica se o jogador morreu
+                    if (player.health <= 0) {
+                        player.health = 0;
+                        updateHealthBar();
+                        showGameOver();
+                    }
+                }
+            });
+        }
+
+        // 2. SISTEMA DE PARTÍCULAS
+        const particlePool = [];
+
+        function getParticle(x, y) {
+            if (particlePool.length > 0) {
+                const p = particlePool.pop();
+                p.x = x !== undefined ? x : Math.random() * canvas.width;
+                p.y = y !== undefined ? y : Math.random() * canvas.height;
+                p.size = Math.random() * 4 + 2;
+                p.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                p.speedX = (Math.random() - 0.5) * 3;
+                p.speedY = (Math.random() - 0.5) * 3;
+                p.baseSpeedX = p.speedX;
+                p.baseSpeedY = p.speedY;
+                p.trail = [];
+                p.life = undefined;
+                return p;
+            }
+            return createParticle(x, y);
+        }
+
+        function createParticle(x, y) {
+            const types = [
+                { color: `hsl(${Math.random() * 60 + 180}, 80%, 60%)`, size: 3, xp: 1 }, // Normal
+                { color: `hsl(${Math.random() * 60 + 60}, 80%, 60%)`, size: 5, xp: 2 }, // Grande
+                { color: `hsl(${Math.random() * 60 + 300}, 80%, 60%)`, size: 2, xp: 3, special: 'speed' }, // Rápida
+                { color: 'white', size: 6, xp: 5, special: 'heal' } // Cura
+            ];
+            
+            const type = Math.random() > 0.8 ? types[Math.floor(Math.random() * types.length)] : types[0];
+            
+            return {
+                x: x !== undefined ? x : Math.random() * canvas.width,
+                y: y !== undefined ? y : Math.random() * canvas.height,
+                size: type.size,
+                color: type.color,
+                xpValue: type.xp,
+                special: type.special,
+                speedX: (Math.random() - 0.5) * (type.special === 'speed' ? 6 : 3),
+                speedY: (Math.random() - 0.5) * (type.special === 'speed' ? 6 : 3),
+                trail: []
+            };
+        }
+
         function initParticles() {
             particles = [];
             for (let i = 0; i < config.particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 4 + 2,
-                    color: `hsl(${Math.random() * 360}, 80%, 60%)`,
-                    speedX: (Math.random() - 0.5) * 3,
-                    speedY: (Math.random() - 0.5) * 3,
-                    baseSpeedX: (Math.random() - 0.5) * 3,
-                    baseSpeedY: (Math.random() - 0.5) * 3,
-                    trail: []
-                });
+                particles.push(getParticle());
             }
         }
 
-        // Função para forçar aparecimento de partículas e inimigos
-        function forceSpawn() {
-            if (particles.length < config.particleCount * 0.5) {
-                const needed = config.particleCount - particles.length;
-                for (let i = 0; i < needed; i++) {
-                    particles.push({
-                        x: Math.random() * (canvas.width - 100) + 50,
-                        y: Math.random() * (canvas.height - 100) + 50,
-                        size: Math.random() * 4 + 2,
-                        color: `hsl(${Math.random() * 360}, 80%, 60%)`,
-                        speedX: (Math.random() - 0.5) * 3,
-                        speedY: (Math.random() - 0.5) * 3,
-                        baseSpeedX: (Math.random() - 0.5) * 3,
-                        baseSpeedY: (Math.random() - 0.5) * 3,
-                        trail: []
-                    });
-                }
-            }
-
-            if (enemies.length < 3 && config.wave.spawned < config.wave.enemiesToSpawn) {
-                spawnEnemy();
-            }
-        }
-
-        // Menu Hamburguer
-        const menuToggle = document.getElementById('menu-toggle');
-        const menu = document.getElementById('menu');
-
-        menuToggle.addEventListener('click', () => {
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Fechar menu ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && e.target !== menuToggle && e.target !== document.getElementById('bigbang-btn')) {
-                menu.style.display = 'none';
-            }
-        });
-
-        // Controles do menu
-        document.getElementById('menu-coop').addEventListener('click', toggleCoopMode);
-        document.getElementById('menu-show-galaxies').addEventListener('click', showGalaxyMap);
-        document.getElementById('menu-reset').addEventListener('click', resetGame);
-
-        document.getElementById('menu-attract').addEventListener('click', () => {
-            config.players[0].mode = 'attract';
-            updateMenuButtons();
-            menu.style.display = 'none';
-        });
-
-        document.getElementById('menu-repel').addEventListener('click', () => {
-            config.players[0].mode = 'repel';
-            updateMenuButtons();
-            menu.style.display = 'none';
-        });
-
-        document.getElementById('menu-vortex').addEventListener('click', () => {
-            config.players[0].mode = 'vortex';
-            updateMenuButtons();
-            menu.style.display = 'none';
-        });
-
-        // Botão Big Bang
-        document.getElementById('bigbang-btn').addEventListener('click', activateBigBang);
-
-        function toggleCoopMode() {
-            config.coopMode = !config.coopMode;
-            config.players[1].active = config.coopMode;
-
-            const coopButton = document.getElementById('menu-coop');
-            coopButton.textContent = `🔵 Cooperativo: ${config.coopMode ? 'ON' : 'OFF'}`;
-
-            if(config.isMobile) {
-                document.getElementById('mobile-controls-p2').style.display = 
-                    config.coopMode ? 'flex' : 'none';
-            }
-
-            config.players[0].radius = config.coopMode ? 120 : 150;
-            config.players[1].radius = 120;
-        }
-
-        function showGalaxyMap() {
-            document.getElementById('galaxy-map').style.display = 'block';
-            renderGalaxyMap();
-            menu.style.display = 'none';
-        }
-
-        function resetGame() {
-            if(confirm("Tem certeza que quer reiniciar o jogo? Todo progresso será perdido.")) {
-                location.reload();
-            }
-        }
-
-        function resetGameState() {
-            config.players.forEach(player => {
-                player.health = player.maxHealth;
-            });
-            config.xp = 0;
-            config.level = 1;
-            enemies = [];
-            initParticles();
-            updateHealthBar();
-            updateXPBar();
-        }
-
-        function updateMenuButtons() {
-            const modes = ['attract', 'repel', 'vortex'];
-            modes.forEach(mode => {
-                const btn = document.getElementById(`menu-${mode}`);
-                btn.style.background = config.players[0].mode === mode ? 
-                    'rgba(74, 0, 224, 0.5)' : 'transparent';
-            });
-        }
-
-        // Controles mobile
-        document.getElementById("mobileAttract").addEventListener('click', () => {
-            config.players[0].mode = 'attract';
-            updateMenuButtons();
-        });
-
-        document.getElementById("mobileRepel").addEventListener('click', () => {
-            config.players[0].mode = 'repel';
-            updateMenuButtons();
-        });
-
-        document.getElementById("mobileVortex").addEventListener('click', () => {
-            config.players[0].mode = 'vortex';
-            updateMenuButtons();
-        });
-
-        // Controles jogador 2
-        document.getElementById("mobileAttractP2").addEventListener('click', () => {
-            config.players[1].mode = 'attract';
-        });
-
-        document.getElementById("mobileRepelP2").addEventListener('click', () => {
-            config.players[1].mode = 'repel';
-        });
-
-        document.getElementById("mobileVortexP2").addEventListener('click', () => {
-            config.players[1].mode = 'vortex';
-        });
-
-        // Mouse e toques
-        const mouse = { x: null, y: null };
-        canvas.addEventListener('mousemove', (e) => {
-            if(!config.coopMode) {
-                config.players[0].x = e.clientX;
-                config.players[0].y = e.clientY;
-            } else {
-                config.players[0].x = e.clientX;
-                config.players[0].y = e.clientY;
-            }
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if(e.touches.length === 1) {
-                config.players[0].x = e.touches[0].clientX;
-                config.players[0].y = e.touches[0].clientY;
-            } else if(e.touches.length === 2 && config.coopMode) {
-                config.players[0].x = e.touches[0].clientX;
-                config.players[0].y = e.touches[0].clientY;
-                config.players[1].x = e.touches[1].clientX;
-                config.players[1].y = e.touches[1].clientY;
-            }
-        });
-
-        // Sistema de Galáxias
-        const galaxies = {
-            classic: {
-                name: "Clássica",
-                description: "Modo padrão com física básica",
-                unlocked: true,
-                init: function() {
-                    config.particleCount = 200;
-                    if(config.isMobile) config.particleCount = Math.floor(config.particleCount * 0.6);
-                    initParticles();
-                }
-            },
-            electric: {
-                name: "Elétrica",
-                description: "Partículas com carga positiva e negativa",
-                unlocked: false,
-                requirement: "Alcance nível 2",
-                init: function() {
-                    config.particleCount = 250;
-                    if(config.isMobile) config.particleCount = Math.floor(config.particleCount * 0.6);
-                    initParticles();
-                }
-            },
-            quantum: {
-                name: "Quântica",
-                description: "Partículas podem se teleportar",
-                unlocked: false,
-                requirement: "Alcance nível 3",
-                init: function() {
-                    config.particleCount = 300;
-                    if(config.isMobile) config.particleCount = Math.floor(config.particleCount * 0.6);
-                    initParticles();
-                }
-            },
-            chaos: {
-                name: "Caótica",
-                description: "Modo frenético com física imprevisível",
-                unlocked: false,
-                requirement: "Alcance nível 5",
-                init: function() {
-                    config.particleCount = 400;
-                    if(config.isMobile) config.particleCount = Math.floor(config.particleCount * 0.6);
-                    initParticles();
-                }
-            }
-        };
-
-        function renderGalaxyMap() {
-            const container = document.getElementById('galaxies-list');
-            container.innerHTML = '';
-
-            for (const [id, galaxy] of Object.entries(galaxies)) {
-                const galaxyElement = document.createElement('div');
-                galaxyElement.className = `galaxy ${galaxy.unlocked ? 'unlocked' : 'locked'}`;
-                galaxyElement.innerHTML = `
-                    <h3>${galaxy.name}</h3>
-                    <p>${galaxy.description}</p>
-                    ${!galaxy.unlocked ? `<small>${galaxy.requirement}</small>` : ''}
-                `;
-
-                if (galaxy.unlocked) {
-                    galaxyElement.addEventListener('click', () => {
-                        config.galaxies.current = id;
-                        galaxies[id].init();
-                        document.getElementById('galaxy-map').style.display = 'none';
-
-                        if(!config.achievements.galaxyExplorer.unlocked) {
-                            config.achievements.galaxyExplorer.count++;
-                            if(config.achievements.galaxyExplorer.count >= config.achievements.galaxyExplorer.required) {
-                                config.achievements.galaxyExplorer.unlocked = true;
-                                showUnlockMessage("Conquista: Explorador Galáctico!");
-                                addXP(50);
+        function updateParticles(deltaTime) {
+            const player = config.players[0];
+            const updatesThisFrame = Math.min(100, particles.length);
+            
+            for (let i = 0; i < updatesThisFrame; i++) {
+                const idx = (lastUpdateIndex + i) % particles.length;
+                const p = particles[idx];
+                
+                // Movimento básico
+                p.x += p.speedX * (deltaTime / 16.67);
+                p.y += p.speedY * (deltaTime / 16.67);
+                
+                // Interação com o jogador
+                const dx = player.x - p.x;
+                const dy = player.y - p.y;
+                const distSq = dx*dx + dy*dy;
+                const dist = Math.sqrt(distSq);
+                
+                if (distSq < player.radius*player.radius) {
+                    // Efeito de sucção quando muito próximo (20% do raio)
+                    const suctionRadius = player.radius * 0.2;
+                    const isVeryClose = dist < suctionRadius;
+                    
+                    // Modo atração - efeito mais forte quando perto
+                    if (player.mode === 'attract') {
+                        const force = isVeryClose ? 0.5 : 0.1; // Mais forte quando perto
+                        const nx = dx/dist;
+                        const ny = dy/dist;
+                        
+                        p.speedX += nx * force * (1 - dist/player.radius) * (deltaTime / 16.67);
+                        p.speedY += ny * force * (1 - dist/player.radius) * (deltaTime / 16.67);
+                        
+                        // Absorve a partícula se estiver muito perto
+                        if (isVeryClose && dist < player.size * 0.8) {
+                            // Ganha XP baseado no tipo de partícula
+                            const xpGain = p.xpValue || 1;
+                            config.xp += xpGain;
+                            config.particlesAbsorbed++;
+                            
+                            // Efeito sonoro
+                            if (config.soundEnabled) {
+                                config.soundEffects.absorb.currentTime = 0;
+                                config.soundEffects.absorb.play();
                             }
-                        }
-                    });
-                }
-
-                container.appendChild(galaxyElement);
-            }
-        }
-
-        document.getElementById("close-galaxy-map").addEventListener('click', () => {
-            document.getElementById('galaxy-map').style.display = 'none';
-        });
-
-        // INIMIGOS
-        let enemies = [];
-        let enemySpawnTimer = 0;
-        const enemyFaces = [">:['", ">:(", "X_X", ">_<", ":O", "◉_◉", "ಠ_ಠ", "⊙_⊙", "≧◡≦", "◕‿◕"];
-
-        function spawnEnemy() {
-            const isElite = Math.random() < 0.1;
-            const isBlackHole = config.level > 3 && Math.random() < 0.05;
-            const sizeBase = isBlackHole ? 40 : (isElite ? 30 : 20);
-
-            const enemy = {
-                x: Math.random() * (canvas.width - sizeBase) + sizeBase/2,
-                y: Math.random() * (canvas.height - sizeBase) + sizeBase/2,
-                size: sizeBase * (1 + config.level * 0.05),
-                speedX: (Math.random() - 0.5) * (3 + config.level * 0.5),
-                speedY: (Math.random() - 0.5) * (3 + config.level * 0.5),
-                health: (isBlackHole ? 15 : (isElite ? 5 : 3)) + config.level * (isBlackHole ? 2 : 1),
-                maxHealth: (isBlackHole ? 15 : (isElite ? 5 : 3)) + config.level * (isBlackHole ? 2 : 1),
-                face: enemyFaces[Math.floor(Math.random() * enemyFaces.length)],
-                type: isBlackHole ? 'blackhole' : (isElite ? 'elite' : 'normal'),
-                damage: isBlackHole ? 1 : (isElite ? 0.7 : 0.5)
-            };
-
-            if(enemy.type === 'blackhole') {
-                enemy.face = "(@_@)";
-                enemy.speedX *= 0.5;
-                enemy.speedY *= 0.5;
-            }
-
-            enemies.push(enemy);
-            config.wave.spawned++;
-        }
-
-        function updateEnemies() {
-            enemies.forEach((enemy, index) => {
-                switch(enemy.type) {
-                    case 'blackhole':
-                        particles.forEach(p => {
-                            const dx = enemy.x - p.x;
-                            const dy = enemy.y - p.y;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-
-                            if(distance < enemy.size * 2) {
-                                const force = (enemy.size * 2 - distance) / (enemy.size * 2);
-                                const angle = Math.atan2(dy, dx);
-                                p.speedX += Math.cos(angle) * force * 0.5;
-                                p.speedY += Math.sin(angle) * force * 0.5;
-
-                                if(distance < enemy.size * 0.5) {
-                                    particles.splice(particles.indexOf(p), 1);
-                                }
-                            }
-                        });
-                        break;
-
-                    default:
-                        let closestPlayer = null;
-                        let minDistance = Infinity;
-
-                        config.players.forEach(player => {
-                            if(player.active && player.x && player.y) {
-                                const dx = player.x - enemy.x;
-                                const dy = player.y - enemy.y;
-                                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                                if(distance < minDistance) {
-                                    minDistance = distance;
-                                    closestPlayer = player;
-                                }
-                            }
-                        });
-
-                        if(closestPlayer && Math.random() > 0.95) {
-                            const dx = closestPlayer.x - enemy.x;
-                            const dy = closestPlayer.y - enemy.y;
-                            const angle = Math.atan2(dy, dx);
-                            enemy.speedX = Math.cos(angle) * 2;
-                            enemy.speedY = Math.sin(angle) * 2;
-                        }
-                }
-
-                enemy.x += enemy.speedX;
-                enemy.y += enemy.speedY;
-
-                if (enemy.x < enemy.size/2) enemy.x = enemy.size/2;
-                if (enemy.x > canvas.width - enemy.size/2) enemy.x = canvas.width - enemy.size/2;
-                if (enemy.y < enemy.size/2) enemy.y = enemy.size/2;
-                if (enemy.y > canvas.height - enemy.size/2) enemy.y = canvas.height - enemy.size/2;
-
-                config.players.forEach(player => {
-                    if(player.active && player.x && player.y) {
-                        const dx = player.x - enemy.x;
-                        const dy = player.y - enemy.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-
-                        if (distance < enemy.size/2 + 15) {
-                            player.health -= enemy.damage * (config.coopMode ? 0.7 : 1);
-                            updateHealthBar();
-
-                            if(player.id === 1) {
-                                document.body.style.boxShadow = 'inset 0 0 30px red';
-                                setTimeout(() => {
-                                    document.body.style.boxShadow = 'none';
-                                }, 100);
-                            }
+                            
+                            // Remove a partícula
+                            particlePool.push(particles.splice(idx, 1)[0]);
+                            updateXPBar();
+                            updateStatsPanel();
+                            updateQuest('absorb100');
+                            continue; // Pula para a próxima partícula
                         }
                     }
-                });
-
-                particles.forEach(particle => {
-                    const dx = enemy.x - particle.x;
-                    const dy = enemy.y - particle.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const minDist = enemy.size/2 + particle.size/2;
-
-                    if (distance < minDist) {
-                        enemy.health -= 0.05;
-                        const angle = Math.atan2(dy, dx);
-                        const force = (minDist - distance) * 0.1;
-                        particle.speedX = -Math.cos(angle) * force * 3;
-                        particle.speedY = -Math.sin(angle) * force * 3;
-                    }
-                });
-
-                if (enemy.health <= 0) {
-                    createExplosion(enemy.x, enemy.y, enemy.size);
-                    enemies.splice(index, 1);
-
-                    const xpValue = enemy.type === 'elite' ? 25 : 
-                                   enemy.type === 'blackhole' ? 50 : 10;
-                    addXP(xpValue * (config.coopMode ? 0.8 : 1));
-
-                    config.enemiesDestroyed++;
-                    if(!config.achievements.enemyDestroyer.unlocked && 
-                       config.enemiesDestroyed >= config.achievements.enemyDestroyer.required) {
-                        config.achievements.enemyDestroyer.unlocked = true;
-                        showUnlockMessage("Conquista: Destruidor de Inimigos!");
-                        addXP(100);
+                    // Modo repulsão (mantido igual)
+                    else if (player.mode === 'repel') {
+                        const nx = dx/dist;
+                        const ny = dy/dist;
+                        p.speedX -= nx * 0.2 * (1 - dist/player.radius) * (deltaTime / 16.67);
+                        p.speedY -= ny * 0.2 * (1 - dist/player.radius) * (deltaTime / 16.67);
                     }
                 }
-            });
+                
+                // Limites da tela
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -0.8;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -0.8;
+                
+                // Atualiza trilha
+                p.trail.push({x: p.x, y: p.y, size: p.size});
+                if (p.trail.length > 5) p.trail.shift();
+            }
+            
+            lastUpdateIndex = (lastUpdateIndex + updatesThisFrame) % particles.length;
         }
 
-        function createExplosion(x, y, size) {
-            for (let i = 0; i < 15; i++) {
-                particles.push({
-                    x: x,
-                    y: y,
-                    size: Math.random() * 3 + 1,
-                    color: `hsl(${Math.random() * 60}, 100%, 50%)`,
-                    speedX: (Math.random() - 0.5) * 10,
-                    speedY: (Math.random() - 0.5) * 10,
-                    baseSpeedX: 0,
-                    baseSpeedY: 0,
-                    life: 100 + Math.random() * 50,
-                    trail: []
-                });
+        // 3. SISTEMA DE BIG BANG
+        function checkBigBangUnlock() {
+            // Verifica se o jogador alcançou um nível de desbloqueio
+            if (config.level >= config.bigBang.nextUnlockLevel && !config.bigBang.unlocked) {
+                config.bigBang.unlocked = true;
+                config.bigBang.nextUnlockLevel += config.bigBang.availableEvery;
+                showUnlockMessage("HABILIDADE DESBLOQUEADA: Big Bang Cósmico! (Barra de Espaço)");
+                
+                // Ativa o botão do Big Bang
+                document.getElementById('bigbang-btn').style.display = 'flex';
+                updateBigBangRequirement();
             }
         }
 
-        function drawEnemies() {
-            enemies.forEach(enemy => {
-                const gradient = ctx.createRadialGradient(
-                    enemy.x, enemy.y, enemy.size * 0.3,
-                    enemy.x, enemy.y, enemy.size
-                );
-
-                switch(enemy.type) {
-                    case 'elite':
-                        gradient.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
-                        gradient.addColorStop(1, 'rgba(255, 50, 0, 0.8)');
-                        break;
-                    case 'blackhole':
-                        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
-                        gradient.addColorStop(0.5, 'rgba(50, 0, 100, 0.8)');
-                        gradient.addColorStop(1, 'rgba(150, 0, 0, 0.8)');
-                        break;
-                    default:
-                        gradient.addColorStop(0, 'rgba(255, 50, 50, 0.8)');
-                        gradient.addColorStop(1, 'rgba(150, 0, 0, 0.8)');
-                }
-
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                if(enemy.type === 'blackhole') {
-                    ctx.strokeStyle = 'rgba(100, 0, 255, 0.7)';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(enemy.x, enemy.y, enemy.size * 1.5, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-
-                ctx.font = `${enemy.size/2}px monospace`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = enemy.type === 'elite' ? 'gold' : 
-                               enemy.type === 'blackhole' ? '#8A2BE2' : 'white';
-                ctx.fillText(enemy.face, enemy.x, enemy.y + (enemy.size * 0.05));
-
-                const healthBarWidth = enemy.size * 1.5;
-                const healthPercent = enemy.health / enemy.maxHealth;
-
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(
-                    enemy.x - healthBarWidth/2, 
-                    enemy.y - enemy.size - 15, 
-                    healthBarWidth, 
-                    8
-                );
-
-                ctx.fillStyle = `hsl(${healthPercent * 120}, 100%, 50%)`;
-                ctx.fillRect(
-                    enemy.x - healthBarWidth/2, 
-                    enemy.y - enemy.size - 15, 
-                    healthBarWidth * healthPercent, 
-                    8
-                );
-            });
-        }
-
-        // BIG BANG
         function activateBigBang() {
-            if (config.bigBangCooldown <= 0 && !config.isBigBangActive) {
-                config.isBigBangActive = true;
-
-                const bang = document.createElement('div');
-                bang.style.position = 'fixed';
-                bang.style.left = '0';
-                bang.style.top = '0';
-                bang.style.width = '100%';
-                bang.style.height = '100%';
-                bang.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,0,255,0) 70%)';
-                bang.style.zIndex = '1000';
-                bang.style.pointerEvents = 'none';
-                bang.style.opacity = '0';
-                bang.style.transition = 'opacity 1s';
-                document.body.appendChild(bang);
-
-                setTimeout(() => {
-                    bang.style.opacity = '1';
-                }, 10);
-
-                setTimeout(() => {
-                    bang.style.opacity = '0';
-                    setTimeout(() => bang.remove(), 1000);
-                }, 100);
-
-                const bangPower = 1 + config.skills.find(s => s.id === 'bigbang_power').level * 0.5;
-
-                enemies.forEach(enemy => {
-                    enemy.health -= 10 * bangPower;
-                });
-
-                particles.forEach(p => {
-                    p.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
-                    p.speedX = (Math.random() - 0.5) * 20 * bangPower;
-                    p.speedY = (Math.random() - 0.5) * 20 * bangPower;
-                });
-
-                for (let i = 0; i < 100 * bangPower; i++) {
-                    particles.push({
-                        x: mouse.x || canvas.width/2,
-                        y: mouse.y || canvas.height/2,
-                        size: Math.random() * 5 + 2,
-                        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-                        speedX: (Math.random() - 0.5) * 20 * bangPower,
-                        speedY: (Math.random() - 0.5) * 20 * bangPower,
-                        baseSpeedX: 0,
-                        baseSpeedY: 0,
-                        life: 100 + Math.random() * 50,
-                        trail: []
-                    });
+            // Verifica se está desbloqueado e disponível
+            if (!config.bigBang.unlocked || config.bigBang.cooldown > 0 || config.bigBang.active) {
+                if (!config.bigBang.unlocked) {
+                    showUnlockMessage(`Desbloqueie o Big Bang no nível ${config.bigBang.nextUnlockLevel}`);
                 }
-
+                return;
+            }
+            
+            config.bigBang.active = true;
+            config.gamePaused = true;
+            
+            // Mostra mensagem dramática
+            const message = document.getElementById('big-bang-message');
+            message.style.opacity = '1';
+            
+            // Toca o som
+            config.soundEffects.bigBang.currentTime = 0;
+            config.soundEffects.bigBang.play();
+            
+            // Fase 1: Preparação (3 segundos)
+            setTimeout(() => {
+                // Remove a mensagem
+                message.style.opacity = '0';
+                
+                // Cria a supernova
+                const supernova = document.getElementById('supernova');
+                const shockwave = document.getElementById('shockwave');
+                
+                // Configura a supernova
+                supernova.style.width = '0';
+                supernova.style.height = '0';
+                supernova.style.opacity = '1';
+                
+                // Animação de crescimento da supernova
+                const growSupernova = () => {
+                    const size = parseInt(supernova.style.width || '0') + 10;
+                    supernova.style.width = `${size}px`;
+                    supernova.style.height = `${size}px`;
+                    
+                    if (size < 300) {
+                        requestAnimationFrame(growSupernova);
+                    } else {
+                        // Explosão final
+                        explodeSupernova();
+                    }
+                };
+                
+                growSupernova();
+                
+                // Configura a shockwave
+                shockwave.style.animation = 'shockwave 1.5s forwards';
+                
+            }, 3000);
+            
+            function explodeSupernova() {
+                // Efeito visual de explosão
+                const supernova = document.getElementById('supernova');
+                supernova.style.animation = 'supernova-explosion 1s forwards';
+                
+                // Flash branco
+                document.body.style.animation = 'cosmic-flash 0.5s';
+                
+                // Tremor de tela intenso
+                document.body.classList.add('camera-shake');
+                
+                // Efeitos de partículas (expandir todas para fora)
+                particles.forEach(p => {
+                    const angle = Math.atan2(p.y - config.players[0].y, p.x - config.players[0].x);
+                    const force = 20 + Math.random() * 10;
+                    p.speedX = Math.cos(angle) * force;
+                    p.speedY = Math.sin(angle) * force;
+                });
+                
+                // Remove inimigos e concede XP
+                enemies.forEach(enemy => {
+                    config.xp += enemy.isElite ? 5 : 2;
+                    config.enemiesDestroyed++;
+                    updateQuest('defeat20');
+                });
+                enemies = [];
+                
+                // Atualiza UI
+                updateXPBar();
+                updateStatsPanel();
+                
+                // Fim dos efeitos (2 segundos depois)
                 setTimeout(() => {
-                    config.isBigBangActive = false;
-                    config.bigBangCooldown = config.bigBangMaxCooldown;
+                    document.body.classList.remove('camera-shake');
+                    supernova.style.opacity = '0';
+                    supernova.style.animation = '';
+                    document.body.style.animation = '';
+                    
+                    // Reseta cooldown
+                    config.bigBang.cooldown = config.bigBang.maxCooldown;
+                    document.getElementById('bigbang-btn').classList.remove('bigbang-ready');
+                    config.bigBang.active = false;
+                    config.gamePaused = false;
+                    
+                    // Verifica se subiu de nível
+                    const xpNeeded = config.level * 100;
+                    if (config.xp >= xpNeeded) {
+                        config.level++;
+                        config.xp -= xpNeeded;
+                        showUnlockMessage(`Nível ${config.level} alcançado!`);
+                        updateXPBar();
+                        updateStatsPanel();
+                        checkBigBangUnlock();
+                    }
+                    
+                    // Esconde o botão até o próximo desbloqueio se for o caso
+                    if (config.level < config.bigBang.nextUnlockLevel) {
+                        document.getElementById('bigbang-btn').style.display = 'none';
+                        config.bigBang.unlocked = false;
+                    }
                 }, 2000);
             }
         }
 
-        // SISTEMA DE XP E NÍVEL
-        function addXP(amount) {
-            config.xp += amount * (1 + Math.sqrt(config.level) * 0.15);
-            const maxXP = 100 + (config.level * 30);
-
-            if (config.xp >= maxXP) {
-                config.xp -= maxXP;
-                config.level++;
-                config.power += 0.2;
-                config.maxHealth += 10;
-                config.health = config.maxHealth;
-                updateHealthBar();
-
-                if (config.level >= 2 && !galaxies.electric.unlocked) {
-                    galaxies.electric.unlocked = true;
-                    showUnlockMessage("Galáxia Elétrica desbloqueada!");
-                }
-                if (config.level >= 3 && !galaxies.quantum.unlocked) {
-                    galaxies.quantum.unlocked = true;
-                    showUnlockMessage("Galáxia Quântica desbloqueada!");
-                }
-                if (config.level >= 5 && !galaxies.chaos.unlocked) {
-                    galaxies.chaos.unlocked = true;
-                    showUnlockMessage("Galáxia Caótica desbloqueada!");
-                }
-
-                showUnlockMessage(`Nível UP! Agora você é nível ${config.level}`);
+        function updateBigBangCooldownUI() {
+            if (!config.bigBang.unlocked) return;
+            
+            const progress = (1 - (config.bigBang.cooldown / config.bigBang.maxCooldown)) * 100;
+            document.getElementById('bigbang-progress').style.width = `${progress}%`;
+            document.querySelector('.cooldown-overlay').style.width = `${100 - progress}%`;
+            
+            if (config.bigBang.cooldown === 0) {
+                document.getElementById('bigbang-btn').classList.add('bigbang-ready');
             }
-            updateXPBar();
         }
 
-        function updateHealthBar() {
-            let totalHealth = 0;
-            let totalMaxHealth = 0;
-            let activePlayers = 0;
+        function updateBigBangRequirement() {
+            const requirementEl = document.getElementById('bigbang-requirement');
+            
+            if (config.bigBang.unlocked) {
+                requirementEl.textContent = `Próximo em nível ${config.bigBang.nextUnlockLevel}`;
+            } else {
+                requirementEl.textContent = `Desbloqueie no nível ${config.bigBang.nextUnlockLevel}`;
+            }
+        }
 
-            config.players.forEach(player => {
-                if(player.active) {
-                    totalHealth += Math.max(0, player.health);
-                    totalMaxHealth += player.maxHealth;
-                    activePlayers++;
+        // 4. SISTEMA DE MENU E CONTROLES
+        function setupControls() {
+            // Fecha menu quando clicar fora
+            document.addEventListener('click', (e) => {
+                const menu = document.getElementById('menu');
+                if (menu.style.display === 'block' && !e.target.closest('#menu') && e.target.id !== 'menu-toggle') {
+                    menu.style.display = 'none';
                 }
             });
 
-            if(activePlayers === 0) return;
+            // Menu toggle
+            document.getElementById('menu-toggle').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = document.getElementById('menu');
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
 
-            const healthPercent = totalHealth / totalMaxHealth;
-            document.getElementById('health-bar').style.width = `${healthPercent * 100}%`;
-            document.getElementById('health-bar').style.background = 
-                `linear-gradient(90deg, hsl(${healthPercent * 120}, 100%, 50%), hsl(${healthPercent * 120}, 100%, 30%))`;
+            // Controle delegado para todos os itens do menu
+            document.getElementById('menu').addEventListener('click', (e) => {
+                const menuItem = e.target.closest('.menu-item');
+                if (!menuItem) return;
 
-            if (healthPercent <= 0) {
-                setTimeout(() => {
-                    alert(`Game Over! Seu nível: ${config.level}`);
-                    resetGameState();
-                }, 500);
+                const action = menuItem.getAttribute('data-action');
+                const mode = menuItem.getAttribute('data-mode');
+
+                switch(action) {
+                    case 'setMode':
+                        setPlayerMode(mode);
+                        highlightActiveMode();
+                        break;
+                        
+                    case 'toggleCoop':
+                        toggleCoopMode();
+                        break;
+                        
+                    case 'showGalaxies':
+                        showGalaxyMap();
+                        break;
+                        
+                    case 'showSkills':
+                        showSkillTree();
+                        break;
+                        
+                    case 'resetGame':
+                        resetGame();
+                        break;
+                        
+                    case 'toggleSound':
+                        toggleSound();
+                        break;
+                }
+            });
+
+            // Botão Big Bang
+            document.getElementById('bigbang-btn').addEventListener('click', activateBigBang);
+
+            // Controles mobile
+            if (config.isMobile) {
+                document.getElementById('mobileAttract').addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    config.players[0].mode = 'attract';
+                    e.target.classList.add('active');
+                });
+                
+                document.getElementById('mobileRepel').addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    config.players[0].mode = 'repel';
+                    e.target.classList.add('active');
+                });
+                
+                document.getElementById('mobileVortex').addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    config.players[0].mode = 'vortex';
+                    e.target.classList.add('active');
+                });
+                
+                // Reset ao soltar
+                ['mobileAttract', 'mobileRepel', 'mobileVortex'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        config.players[0].mode = 'normal';
+                        btn.classList.remove('active');
+                    });
+                });
+            }
+            
+            // Controles de teclado
+            window.addEventListener('keydown', (e) => {
+                if (config.gamePaused) return;
+                
+                switch(e.key) {
+                    case '1': 
+                        config.players[0].mode = 'attract';
+                        document.getElementById('mobileAttract')?.classList.add('active');
+                        break;
+                    case '2': 
+                        config.players[0].mode = 'repel';
+                        document.getElementById('mobileRepel')?.classList.add('active');
+                        break;
+                    case '3': 
+                        config.players[0].mode = 'vortex';
+                        document.getElementById('mobileVortex')?.classList.add('active');
+                        break;
+                    case ' ': 
+                        activateBigBang();
+                        break;
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                if (['1', '2', '3'].includes(e.key)) {
+                    config.players[0].mode = 'normal';
+                    document.getElementById('mobileAttract')?.classList.remove('active');
+                    document.getElementById('mobileRepel')?.classList.remove('active');
+                    document.getElementById('mobileVortex')?.classList.remove('active');
+                }
+            });
+            
+            // Mouse/touch
+            canvas.addEventListener('mousemove', (e) => {
+                config.players[0].x = e.clientX;
+                config.players[0].y = e.clientY;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                config.players[0].x = touch.clientX;
+                config.players[0].y = touch.clientY;
+            }, { passive: false });
+
+            // Botão de reinício
+            document.getElementById('restart-btn').addEventListener('click', restartGame);
+
+            // Fechar mapas
+            document.getElementById('close-galaxy-map').addEventListener('click', () => {
+                document.getElementById('galaxy-map').style.display = 'none';
+            });
+
+            document.getElementById('close-skill-tree').addEventListener('click', () => {
+                document.getElementById('skill-tree').style.display = 'none';
+            });
+        }
+
+        function setPlayerMode(mode) {
+            config.players[0].mode = mode;
+            showUnlockMessage(`Modo ${getModeName(mode)} ativado`);
+        }
+
+        function getModeName(mode) {
+            const names = {
+                attract: 'Atração',
+                repel: 'Repulsão',
+                vortex: 'Vórtice',
+                normal: 'Normal'
+            };
+            return names[mode] || mode;
+        }
+
+        function highlightActiveMode() {
+            document.querySelectorAll('[data-action="setMode"]').forEach(item => {
+                if (item.getAttribute('data-mode') === config.players[0].mode) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function toggleCoopMode() {
+            config.coopMode = !config.coopMode;
+            config.players[1].active = config.coopMode;
+            
+            document.getElementById('coop-status').textContent = config.coopMode ? 'ON' : 'OFF';
+            document.getElementById('mobile-controls-p2').style.display = config.coopMode ? 'flex' : 'none';
+            
+            showUnlockMessage(`Modo Cooperativo ${config.coopMode ? 'ativado' : 'desativado'}`);
+        }
+
+        function toggleSound() {
+            config.soundEnabled = !config.soundEnabled;
+            document.getElementById('sound-status').textContent = config.soundEnabled ? 'ON' : 'OFF';
+            
+            // Atualiza todos os sons
+            for (const sound of Object.values(config.soundEffects)) {
+                sound.muted = !config.soundEnabled;
+            }
+            
+            showUnlockMessage(`Som ${config.soundEnabled ? 'ligado' : 'desligado'}`);
+        }
+
+        // 5. SISTEMA DE GALÁXIAS
+        function showGalaxyMap() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('galaxy-map').style.display = 'block';
+            
+            // Atualiza a lista de galáxias
+            const galaxiesList = document.getElementById('galaxies-list');
+            galaxiesList.innerHTML = '';
+            
+            for (const [key, galaxy] of Object.entries(config.galaxies.list)) {
+                const galaxyEl = document.createElement('div');
+                galaxyEl.className = `galaxy ${config.galaxies.unlocked.includes(key) ? 'unlocked' : 'locked'}`;
+                galaxyEl.innerHTML = `
+                    <h3>${galaxy.name}</h3>
+                    <p>${galaxy.description}</p>
+                    ${!config.galaxies.unlocked.includes(key) ? 
+                      `<small>Requisito: ${galaxy.unlockCondition}</small>` : ''}
+                `;
+                
+                if (config.galaxies.unlocked.includes(key)) {
+                    galaxyEl.addEventListener('click', () => {
+                        config.galaxies.current = key;
+                        document.body.style.background = galaxy.background;
+                        document.getElementById('galaxy-map').style.display = 'none';
+                        showUnlockMessage(`Galáxia ${galaxy.name} selecionada!`);
+                    });
+                }
+                
+                galaxiesList.appendChild(galaxyEl);
+            }
+        }
+
+        // 6. SISTEMA DE HABILIDADES
+        function showSkillTree() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('skill-tree').style.display = 'block';
+            
+            // Atualiza a lista de habilidades
+            const skillsList = document.getElementById('skills-list');
+            skillsList.innerHTML = '';
+            
+            for (const [key, skill] of Object.entries(config.skills.tree)) {
+                const skillEl = document.createElement('div');
+                skillEl.className = `skill ${skill.currentLevel > 0 ? 'unlocked' : 'locked'} 
+                                   ${skill.currentLevel >= skill.maxLevel ? 'maxed' : ''}`;
+                
+                skillEl.innerHTML = `
+                    <h3>${skill.name} (Nível ${skill.currentLevel}/${skill.maxLevel})</h3>
+                    <p>${skill.effect}</p>
+                    <div class="skill-cost">Custo: ${skill.cost} pontos</div>
+                    ${skill.requires ? `<div class="skill-requires">Requer: ${skill.requires.join(', ')}</div>` : ''}
+                    ${skill.currentLevel < skill.maxLevel && 
+                      config.skillPoints > 0 &&
+                      (!skill.requires || checkSkillRequirements(skill.requires)) ?
+                      '<button class="upgrade-btn" data-skill="'+key+'">Melhorar</button>' : ''}
+                `;
+                
+                skillsList.appendChild(skillEl);
+            }
+            
+            // Adiciona eventos aos botões de upgrade
+            document.querySelectorAll('.upgrade-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const skillKey = this.getAttribute('data-skill');
+                    upgradeSkill(skillKey);
+                });
+            });
+        }
+
+        function checkSkillRequirements(requirements) {
+            for (const req of requirements) {
+                const [skillName, level] = req.split(':');
+                if ((config.skills.tree[skillName]?.currentLevel || 0) < parseInt(level)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function upgradeSkill(skillKey) {
+            const skill = config.skills.tree[skillKey];
+            if (skill.currentLevel < skill.maxLevel && config.skillPoints >= skill.cost) {
+                if (skill.requires && !checkSkillRequirements(skill.requires)) {
+                    showUnlockMessage("Requisitos não atendidos!");
+                    return;
+                }
+                
+                skill.currentLevel++;
+                config.skillPoints -= skill.cost;
+                showUnlockMessage(`${skill.name} melhorado para nível ${skill.currentLevel}!`);
+                
+                // Aplica efeitos da habilidade
+                applySkillEffects();
+                
+                // Atualiza a árvore de habilidades
+                showSkillTree();
+            }
+        }
+
+        function applySkillEffects() {
+            const skills = config.skills.tree;
+            const player = config.players[0];
+            
+            // Atração
+            player.radius = 150 * (1 + (skills.attractRadius.currentLevel * 0.2));
+            
+            // Saúde
+            player.maxHealth = 100 * (1 + (skills.healthBoost.currentLevel * 0.1));
+            player.health = Math.min(player.health, player.maxHealth);
+            updateHealthBar();
+        }
+
+        // 7. SISTEMA DE MISSÕES
+        function updateQuest(questId, amount = 1) {
+            const quest = config.quests.active.find(q => q.id === questId);
+            if (quest) {
+                quest.current += amount;
+                if (quest.current >= quest.target) {
+                    config.xp += quest.reward;
+                    config.quests.completed.push(quest.id);
+                    config.quests.active = config.quests.active.filter(q => q.id !== questId);
+                    showUnlockMessage(`Missão completa! +${quest.reward}XP`);
+                    
+                    // Adicionar nova missão
+                    if (quest.id === 'absorb100') {
+                        config.quests.active.push(
+                            { id: 'absorb500', target: 500, current: 0, reward: 250, title: "Absorver 500 partículas" }
+                        );
+                    }
+                    
+                    updateXPBar();
+                    updateQuestUI();
+                }
+            }
+        }
+
+        function updateQuestUI() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
+            
+            config.quests.active.forEach(quest => {
+                const progress = Math.min(100, (quest.current / quest.target) * 100);
+                const questEl = document.createElement('div');
+                questEl.className = 'quest-item';
+                questEl.innerHTML = `
+                    <div>${quest.title}</div>
+                    <div class="quest-progress">
+                        <div class="quest-progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                    <small>${quest.current}/${quest.target} (${Math.round(progress)}%)</small>
+                `;
+                container.appendChild(questEl);
+            });
+        }
+
+        // 8. SISTEMA DE GAME OVER
+        function showGameOver() {
+            // Pausa o jogo
+            config.gamePaused = true;
+            
+            // Toca som de game over
+            config.soundEffects.gameOver.currentTime = 0;
+            config.soundEffects.gameOver.play();
+            
+            // Preenche estatísticas
+            document.getElementById('go-level').textContent = config.level;
+            document.getElementById('go-wave').textContent = config.wave.number;
+            document.getElementById('go-particles').textContent = config.particlesAbsorbed;
+            document.getElementById('go-enemies').textContent = config.enemiesDestroyed;
+            
+            // Cria estrelas de fundo
+            createStars();
+            
+            // Mostra tela de game over
+            document.getElementById('game-over-screen').style.display = 'flex';
+        }
+
+        function createStars() {
+            const container = document.getElementById('game-over-stars');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(star);
+            }
+        }
+
+        function restartGame() {
+            // Esconde tela de game over
+            document.getElementById('game-over-screen').style.display = 'none';
+            
+            // Reseta o estado do jogo
+            config.players[0].health = config.players[0].maxHealth;
+            config.gamePaused = false;
+            
+            // Reinicia elementos do jogo
+            particles = [];
+            enemies = [];
+            initParticles();
+            config.wave.number = 1;
+            config.wave.spawned = 0;
+            config.wave.timer = 0;
+            config.wave.enemiesToSpawn = 5;
+            config.xp = 0;
+            config.level = 1;
+            
+            // Atualiza UI
+            updateHealthBar();
+            updateXPBar();
+            updateStatsPanel();
+            updateQuestUI();
+            
+            // Reinicia o loop se necessário
+            if (!gameLoopRunning) {
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // 9. SISTEMA DE UI
+        function updateHealthBar() {
+            const healthPercent = (config.players[0].health / config.players[0].maxHealth) * 100;
+            const healthBar = document.getElementById('health-bar');
+            
+            healthBar.style.width = `${healthPercent}%`;
+            healthBar.style.backgroundColor = 
+                healthPercent > 60 ? '#00F5A0' : 
+                healthPercent > 30 ? '#FFA500' : '#FF0000';
+            
+            // Efeito de piscar quando a vida está baixa
+            if (healthPercent < 30) {
+                healthBar.style.animation = 'pulse 1s infinite';
+            } else {
+                healthBar.style.animation = 'none';
             }
         }
 
         function updateXPBar() {
-            const maxXP = 100 + (config.level * 30);
-            const xpPercent = (config.xp / maxXP) * 100;
+            const xpNeeded = config.level * 100;
+            const xpPercent = (config.xp / xpNeeded) * 100;
             document.getElementById('xp-bar').style.width = `${xpPercent}%`;
             document.getElementById('xp-text').textContent = 
-                `${Math.floor(config.xp)}/${maxXP} XP (Nível ${config.level})`;
+                `${config.xp}/${xpNeeded} XP (Nível ${config.level})`;
         }
 
-        function updateBigBangCooldown() {
-            if (config.bigBangCooldown > 0) {
-                config.bigBangCooldown--;
-                const percent = (1 - (config.bigBangCooldown / config.bigBangMaxCooldown)) * 100;
-                document.getElementById('bigbang-progress').style.width = `${percent}%`;
-            }
+        function updateStatsPanel() {
+            document.getElementById('stat-level').textContent = config.level;
+            document.getElementById('stat-xp').textContent = `${config.xp}/${config.level * 100}`;
+            document.getElementById('stat-particles').textContent = particles.length;
+            document.getElementById('stat-enemies').textContent = enemies.length;
+            document.getElementById('stat-wave').textContent = config.wave.number;
         }
 
-        function showUnlockMessage(text) {
-            messageQueue.push(text);
-            showNextMessage();
-        }
-
-        function showNextMessage() {
-            if (isShowingMessage || messageQueue.length === 0) return;
+        function showUnlockMessage(message) {
+            const el = document.createElement('div');
+            el.className = 'unlock-message';
+            el.textContent = message;
+            document.body.appendChild(el);
             
-            isShowingMessage = true;
-            const text = messageQueue.shift();
-            
-            const message = document.createElement('div');
-            message.className = 'unlock-message';
-            message.textContent = text;
-            
-            document.body.appendChild(message);
-
             setTimeout(() => {
-                message.style.opacity = '1';
-                message.style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 10);
-
-            setTimeout(() => {
-                message.style.opacity = '0';
-                message.style.transform = 'translate(-50%, -50%) scale(0.9)';
+                el.style.opacity = '1';
+                el.style.transform = 'translate(-50%, -50%) scale(1)';
                 
                 setTimeout(() => {
-                    message.remove();
-                    isShowingMessage = false;
-                    showNextMessage();
-                }, 500);
-            }, 2000);
+                    el.style.opacity = '0';
+                    el.style.transform = 'translate(-50%, -50%) scale(0.5)';
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(el);
+                    }, 300);
+                }, 2000);
+            }, 10);
         }
 
-        // CONTADOR DE FPS
-        let fps = 0;
-        let lastUpdate = performance.now();
-        let frameCount = 0;
-
-        function updateFPSCounter() {
-            frameCount++;
-            const now = performance.now();
-            if (now - lastUpdate >= 1000) {
-                fps = frameCount;
-                frameCount = 0;
-                lastUpdate = now;
-                document.getElementById('fps-counter').textContent = `FPS: ${fps}`;
-            }
-        }
-
-        // Desenha os jogadores
-        function drawPlayers() {
-            config.players.forEach(player => {
-                if(!player.active || !player.x || !player.y) return;
-
+        // 10. RENDERIZAÇÃO
+        function render() {
+            try {
+                // Limpa o canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Aplica screen shake se necessário
+                const shakeX = config.screenShakeIntensity > 0 ? 
+                    (Math.random() - 0.5) * config.screenShakeIntensity : 0;
+                const shakeY = config.screenShakeIntensity > 0 ? 
+                    (Math.random() - 0.5) * config.screenShakeIntensity : 0;
+                
+                ctx.save();
+                ctx.translate(shakeX, shakeY);
+                
+                // Reduz o screen shake gradualmente
+                if (config.screenShakeIntensity > 0) {
+                    config.screenShakeIntensity -= 0.5;
+                }
+                
+                // Desenha partículas
+                particles.forEach(p => {
+                    // Trilha
+                    p.trail.forEach((trail, i) => {
+                        const alpha = i / p.trail.length;
+                        ctx.fillStyle = p.color.replace(')', `, ${alpha})`).replace('hsl', 'hsla');
+                        ctx.beginPath();
+                        ctx.arc(trail.x, trail.y, trail.size * alpha, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    
+                    // Partícula principal
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                // Desenha jogador
+                const player = config.players[0];
                 ctx.fillStyle = player.color;
                 ctx.beginPath();
-                ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
+                ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
                 ctx.fill();
-
-                let icon = '';
-                switch(player.mode) {
-                    case 'attract': 
-                        icon = '🧲';
-                        break;
-                    case 'repel': 
-                        icon = '💥';
-                        break;
-                    case 'vortex': 
-                        icon = '🌀';
-                        break;
-                    default: 
-                        icon = player.id === 1 ? '🐶' : '🐱';
-                        break;
-                }
-
-                ctx.font = '24px Arial';
+                
+                ctx.font = `${player.faceSize}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'white';
-                ctx.fillText(icon, player.x, player.y);
-
-                if(player.mode !== 'normal') {
+                ctx.fillText(player.face, player.x, player.y);
+                
+                // Desenha inimigos
+                enemies.forEach(enemy => {
+                    // Corpo do inimigo
+                    ctx.fillStyle = enemy.color;
                     ctx.beginPath();
-                    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = player.color + '40';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            });
-        }
-
-        // LOOP DO JOGO
-        function animate() {
-            updateFPSCounter();
-            updateBigBangCooldown();
-            config.gameTime++;
-
-            forceSpawn();
-
-            ctx.fillStyle = `rgba(10, 10, 20, ${config.galaxies.current === 'chaos' ? 0.1 : 0.2})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            updateEnemies();
-
-            particles.forEach((p, index) => {
-                if (p.life !== undefined && p.life-- <= 0) {
-                    particles.splice(index, 1);
-                    return;
-                }
-
-                p.speedX = p.baseSpeedX;
-                p.speedY = p.baseSpeedY;
-
-                config.players.forEach(player => {
-                    if(!player.active || !player.x || !player.y || player.mode === 'normal' || config.isBigBangActive) return;
-
-                    const dx = player.x - p.x;
-                    const dy = player.y - p.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const maxDist = player.radius;
-
-                    if(distance < maxDist) {
-                        const force = (maxDist - distance) / maxDist;
-                        const angle = Math.atan2(dy, dx);
-
-                        switch(player.mode) {
-                            case 'attract':
-                                const attractForce = 0.1 * player.power * (1 + (maxDist - distance)/maxDist);
-                                p.speedX += dx * attractForce;
-                                p.speedY += dy * attractForce;
-
-                                if (distance < maxDist * 0.2) {
-                                    particles.splice(index, 1);
-                                    addXP(3);
-                                    config.particlesAbsorbed++;
-                                }
-                                break;
-
-                            case 'repel':
-                                p.speedX -= dx * 0.1 * force * player.power;
-                                p.speedY -= dy * 0.1 * force * player.power;
-
-                                if (distance < maxDist * 0.5) {
-                                    p.speedX += (Math.random() - 0.5) * force * 5;
-                                    p.speedY += (Math.random() - 0.5) * force * 5;
-                                    p.color = `hsl(${(Date.now()/10) % 360}, 100%, 70%)`;
-                                }
-                                break;
-
-                            case 'vortex':
-                                const vortexPower = 0.1 * player.power;
-                                p.speedX += Math.cos(angle + Math.PI/2) * vortexPower * force;
-                                p.speedY += Math.sin(angle + Math.PI/2) * vortexPower * force;
-                                p.speedX += dx * 0.03 * force;
-                                p.speedY += dy * 0.03 * force;
-                                p.color = `hsl(${(angle * 180/Math.PI + Date.now()/10) % 360}, 100%, 70%)`;
-                                break;
-                        }
+                    ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Destaque para elites
+                    if (enemy.isElite) {
+                        ctx.strokeStyle = 'gold';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                        
+                        // Efeito de brilho
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                        ctx.beginPath();
+                        ctx.arc(enemy.x, enemy.y, enemy.size + 5, 0, Math.PI * 2);
+                        ctx.fill();
                     }
+                    
+                    // Rosto do inimigo
+                    ctx.font = `${enemy.size * 0.8}px Arial`;
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(enemy.face, enemy.x, enemy.y);
                 });
-
-                p.x += p.speedX;
-                p.y += p.speedY;
-
-                if (p.x < 0) { p.x = 0; p.speedX *= -0.7; }
-                if (p.x > canvas.width) { p.x = canvas.width; p.speedX *= -0.7; }
-                if (p.y < 0) { p.y = 0; p.speedY *= -0.7; }
-                if (p.y > canvas.height) { p.y = canvas.height; p.speedY *= -0.7; }
-
-                if (p.trail) {
-                    p.trail.push({x: p.x, y: p.y});
-                    if (p.trail.length > 10) p.trail.shift();
-                }
-            });
-
-            particles.forEach(p => {
-                if (p.trail && p.trail.length > 1) {
-                    ctx.beginPath();
-                    ctx.moveTo(p.trail[0].x, p.trail[0].y);
-                    for (let i = 1; i < p.trail.length; i++) {
-                        ctx.lineTo(p.trail[i].x, p.trail[i].y);
-                    }
-                    ctx.strokeStyle = p.color.replace(')', ', 0.3)').replace('hsl', 'hsla');
-                    ctx.lineWidth = p.size / 2;
-                    ctx.stroke();
-                }
-
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            drawEnemies();
-            drawPlayers();
-
-            requestAnimationFrame(animate);
+                
+                ctx.restore();
+            } catch (error) {
+                console.error("Erro na renderização:", error);
+            }
         }
 
-        // Sistema de ondas
-        config.wave.update = function() {
-            if(this.spawned < this.enemiesToSpawn && this.timer++ > 60) {
-                spawnEnemy();
-                this.spawned++;
-                this.timer = 0;
+        // 11. GAME LOOP
+        function gameLoop(timestamp) {
+            try {
+                // Calcula deltaTime
+                const deltaTime = timestamp - lastTime;
+                lastTime = timestamp;
+                
+                // Atualiza FPS counter
+                frameCount++;
+                if (timestamp - fpsLastChecked >= 1000) {
+                    fps = Math.round((frameCount * 1000) / (timestamp - fpsLastChecked));
+                    document.getElementById('fps-counter').textContent = `FPS: ${fps}`;
+                    fpsLastChecked = timestamp;
+                    frameCount = 0;
+                }
+                
+                // Processa física em intervalos fixos
+                const physicsSteps = Math.min(Math.floor(deltaTime / (1000/60)), 3);
+                for (let i = 0; i < physicsSteps; i++) {
+                    updatePhysics(1000/60);
+                }
+                
+                // Renderização
+                render();
+                
+                gameLoopRunning = true;
+                requestAnimationFrame(gameLoop);
+            } catch (error) {
+                console.error("Erro no game loop:", error);
+                initGame();
             }
+        }
 
-            if(enemies.length === 0 && this.spawned >= this.enemiesToSpawn) {
-                this.number++;
-                this.enemiesToSpawn = 5 + this.number * 2;
-                this.spawned = 0;
-                showUnlockMessage(`Onda ${this.number} começando!`);
+        function updatePhysics(deltaTime) {
+            if (config.gamePaused) return;
+            
+            // Verifica desbloqueio do Big Bang
+            checkBigBangUnlock();
+            
+            // Atualiza cooldown
+            if (config.bigBang.cooldown > 0) {
+                config.bigBang.cooldown--;
+                updateBigBangCooldownUI();
             }
-        };
+            
+            // Atualiza partículas
+            updateParticles(deltaTime);
+            
+            // Atualiza inimigos
+            updateEnemies(deltaTime);
+            
+            // Atualiza sistema de ondas
+            config.wave.update();
+        }
 
-        // Redimensionamento
+        // 12. INICIALIZAÇÃO DO JOGO
+        function initGame() {
+            try {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                config.players[0].x = canvas.width/2;
+                config.players[0].y = canvas.height/2;
+                
+                initParticles();
+                setupControls();
+                updateHealthBar();
+                updateXPBar();
+                updateStatsPanel();
+                updateQuestUI();
+                updateBigBangRequirement();
+                
+                // Configura sons
+                for (const sound of Object.values(config.soundEffects)) {
+                    sound.volume = 0.5;
+                    sound.muted = !config.soundEnabled;
+                }
+                
+                // Inicia o game loop
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            } catch (error) {
+                console.error("Erro na inicialização:", error);
+                setTimeout(initGame, 1000);
+            }
+        }
+
+        // Inicia o jogo quando a página carrega
+        window.addEventListener('load', initGame);
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initParticles();
         });
-
-        // Teclado
-        document.addEventListener('keydown', (e) => {
-            switch(e.key.toLowerCase()) {
-                case '1': 
-                    config.players[0].mode = 'attract'; 
-                    break;
-                case '2': 
-                    config.players[0].mode = 'repel'; 
-                    break;
-                case '3': 
-                    config.players[0].mode = 'vortex'; 
-                    break;
-                case ' ': 
-                    activateBigBang(); 
-                    break;
-                case '0':
-                    config.players[0].mode = 'normal';
-                    break;
-            }
-
-            if(config.coopMode) {
-                const speed = 5;
-                const player = config.players[1];
-
-                switch(e.key.toLowerCase()) {
-                    case 'w': 
-                        player.y = (player.y || canvas.height/2) - speed; 
-                        break;
-                    case 's': 
-                        player.y = (player.y || canvas.height/2) + speed; 
-                        break;
-                    case 'a': 
-                        player.x = (player.x || canvas.width/2) - speed; 
-                        break;
-                    case 'd': 
-                        player.x = (player.x || canvas.width/2) + speed; 
-                        break;
-                    case 'q': 
-                        player.mode = 'attract'; 
-                        break;
-                    case 'e': 
-                        player.mode = 'repel'; 
-                        break;
-                    case 'r': 
-                        player.mode = 'vortex'; 
-                        break;
-                    case 'z':
-                        player.mode = 'normal';
-                        break;
-                }
-
-                if(player.x) player.x = Math.max(10, Math.min(canvas.width - 10, player.x));
-                if(player.y) player.y = Math.max(10, Math.min(canvas.height - 10, player.y));
-            }
-        });
-
-        // Inicia o jogo
-        initParticles();
-        updateHealthBar();
-        updateXPBar();
-        animate();
     </script>
 </body>
 </html>
