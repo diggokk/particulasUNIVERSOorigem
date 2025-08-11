@@ -383,11 +383,6 @@
             z-index: 5;
         }
 
-        .mobile-controls#mobile-controls-p2 {
-            bottom: 80px;
-            display: none;
-        }
-
         #bigbang-btn {
             position: fixed;
             bottom: 20px;
@@ -972,6 +967,59 @@
             margin-top: 5px;
         }
 
+        /* Estilo do Boss & Tentáculos */
+        #boss-npc {
+            font-size: 120px;
+            filter: drop-shadow(0 0 20px #ff0000);
+            animation: pulse 1s infinite alternate, float 3s ease-in-out infinite;
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+
+        #tentacles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            display: none;
+        }
+
+        .tentacle {
+            position: absolute;
+            background: linear-gradient(45deg, #8e2de2, #4a00e0);
+            width: 8px;
+            height: 120px;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: tentacleMove 4s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.5s);
+            transform-origin: top;
+        }
+
+        @keyframes tentacleMove {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(calc(var(--i) * 10deg)) translateY(50px); }
+        }
+
+        /* Efeito de Terror */
+        .story-container.terror {
+            background: radial-gradient(ellipse at center, 
+                rgba(139, 0, 0, 0.9) 0%, 
+                rgba(0, 0, 0, 0.95) 100%);
+        }
+
+        .story-dialog-box.terror {
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 30px #ff0000;
+        }
+
         @media (max-width: 768px) {
             .mobile-controls { display: flex; }
             #menu {
@@ -1031,6 +1079,12 @@
             .npc-dialog {
                 max-width: 200px;
                 font-size: 14px;
+            }
+            #boss-npc {
+                font-size: 80px;
+            }
+            .tentacle {
+                height: 80px;
             }
         }
     </style>
@@ -1109,13 +1163,6 @@
         <button class="mobile-btn" id="mobileVortex">🌪️</button>
     </div>
 
-    <!-- Controles mobile jogador 2 -->
-    <div class="mobile-controls" id="mobile-controls-p2">
-        <button class="mobile-btn" id="mobileAttractP2">🧲</button>
-        <button class="mobile-btn" id="mobileRepelP2">💥</button>
-        <button class="mobile-btn" id="mobileVortexP2">🌪️</button>
-    </div>
-
     <!-- Mapa Galáctico -->
     <div id="galaxy-map">
         <h2>Mapa Galáctico</h2>
@@ -1183,6 +1230,12 @@
     <div id="story-mode" class="story-container" style="display:none;">
         <div class="cutscene">
             <div class="story-npc" id="story-npc">👁️</div>
+            <div id="boss-npc" class="story-npc">👁️</div>
+            <div id="tentacles-container">
+                <div class="tentacle" style="--i:1;"></div>
+                <div class="tentacle" style="--i:2;"></div>
+                <div class="tentacle" style="--i:3;"></div>
+            </div>
             <div class="story-dialog-box">
                 <div class="story-dialog-text" id="story-dialog-text"></div>
                 <button class="next-dialog-btn" id="next-dialog-btn">Continuar</button>
@@ -1216,6 +1269,11 @@
         const config = {
             particleCount: 150,
             mouseRadius: 150,
+            particleRespawn: {
+                minParticles: 50,  // Número mínimo de partículas para ativar o respawn
+                respawnAmount: 20, // Quantidade de partículas criadas por respawn
+                checkInterval: 60  // Verifica a cada X frames (60 = ~1 segundo se 60FPS)
+            },
             galaxies: {
                 unlocked: ['classic'],
                 current: 'classic',
@@ -1440,19 +1498,29 @@
                 scenes: [
                     {
                         npc: "👁️",
-                        text: "Bem-vindo, viajante cósmico... Eu sou o Observador. O universo está em perigo e só você pode restaurar o equilíbrio.",
-                        background: "radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)"
+                        text: "MORTAL... VOCÊ OUSA INVADIR MEU UNIVERSO?",
+                        background: "radial-gradient(ellipse at center, #200122 0%, #6f0000 100%)",
+                        effect: "terror" // Ativa modo terror
                     },
                     {
                         npc: "👁️",
-                        text: "Use seus poderes de atração e repulsão para coletar partículas de energia. Elas são essenciais para fortalecer suas habilidades.",
-                        background: "radial-gradient(ellipse at bottom, #0f0c29 0%, #302b63 50%, #24243e 100%)"
+                        text: "EU SOU AZATHOTH, O DEVORADOR DE GALÁXIAS...",
+                        background: "radial-gradient(ellipse at center, #000000 0%, #4a0000 100%)",
+                        effect: "terror"
+                    },
+                    {
+                        npc: "👽",
+                        text: "*sussurro* Psst... Não olhe diretamente para ele! Use as partículas para se fortalecer...",
+                        background: "radial-gradient(ellipse at center, #1B2735 0%, #090A0F 100%)",
+                        effect: "normal"
                     },
                     {
                         npc: "👁️",
-                        text: "Cuidado com as entidades cósmicas hostis! Elas tentarão impedir sua missão. Derrote-as para avançar para novas galáxias.",
-                        background: "radial-gradient(ellipse at bottom, #200122 0%, #6f0000 100%)"
-                }
+                        text: "SEU DESTINO É SER DESTRUÍDO COMO TODOS OS OUTROS!",
+                        background: "radial-gradient(ellipse at center, #300000 0%, #000000 100%)",
+                        effect: "terror",
+                        shake: true // Ativa tremor de tela
+                    }
                 ]
             },
             npc: {
@@ -1468,7 +1536,18 @@
                     "Pressione 1, 2 ou 3... se conseguir lembrar qual é qual.",
                     "Já tentou o Big Bang? Ou ainda não é digno?",
                     "Os inimigos estão rindo de você... literalmente.",
-                    "Você é lento... mas pelo menos é consistente."
+                    "Você é lento... mas pelo menos é consistente.",
+                    // NOVOS DIÁLOGOS ADICIONADOS:
+                    "Sabia que cada galáxia tem suas próprias leis da física? Divertido, né?",
+                    "Eu já vi jogadores melhores... mas também vi piores.",
+                    "Quer um conselho? Não confie nas partículas roxas.",
+                    "O modo cooperativo é para quem não consegue sozinho... igual você!",
+                    "Já perdi a conta de quantos universos eu vi serem destruídos...",
+                    "Você está evoluindo... mas ainda tem muito o que aprender.",
+                    "As habilidades que você desbloqueia são só a ponta do iceberg!",
+                    "Nível 100? Isso é só o tutorial, meu caro...",
+                    "Os inimigos estão ficando mais fortes... ou você que está ficando mais fraco?",
+                    "Você nota como o universo reage às suas ações? Interessante..."
                 ],
                 bossDialog: "🏆 PARABÉNS! Agora o verdadeiro desafio começa... 🐉"
             },
@@ -1595,7 +1674,8 @@
                         // Persegue o jogador apenas dentro do raio de detecção
                         const dx = player.x - enemy.x;
                         const dy = player.y - enemy.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        const distSq = dx*dx + dy*dy;
+                        const dist = Math.sqrt(distSq);
                         
                         if (dist > 0 && dist < enemy.huntRadius) {
                             enemy.x += (dx / dist) * enemy.speed * (deltaTime / 16.67);
@@ -1665,14 +1745,26 @@
             });
         }
 
-        // 2. SISTEMA DE PARTÍCULAS
+        // 2. SISTEMA DE PARTÍCULAS (COM RESPAWN AUTOMÁTICO)
         const particlePool = [];
 
         function getParticle(x, y) {
+            // Posições aleatórias longe do jogador (evita spawn na frente)
+            const spawnPadding = 200;
+            let posX, posY;
+            
+            do {
+                posX = x !== undefined ? x : Math.random() * canvas.width;
+                posY = y !== undefined ? y : Math.random() * canvas.height;
+            } while (
+                Math.abs(posX - config.players[0].x) < spawnPadding && 
+                Math.abs(posY - config.players[0].y) < spawnPadding
+            );
+
             if (particlePool.length > 0) {
                 const p = particlePool.pop();
-                p.x = x !== undefined ? x : Math.random() * canvas.width;
-                p.y = y !== undefined ? y : Math.random() * canvas.height;
+                p.x = posX;
+                p.y = posY;
                 p.size = Math.random() * 4 + 2;
                 p.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
                 p.speedX = (Math.random() - 0.5) * 3;
@@ -1683,7 +1775,7 @@
                 p.life = undefined;
                 return p;
             }
-            return createParticle(x, y);
+            return createParticle(posX, posY);
         }
 
         function createParticle(x, y) {
@@ -1697,8 +1789,8 @@
             const type = Math.random() > 0.8 ? types[Math.floor(Math.random() * types.length)] : types[0];
             
             return {
-                x: x !== undefined ? x : Math.random() * canvas.width,
-                y: y !== undefined ? y : Math.random() * canvas.height,
+                x: x,
+                y: y,
                 size: type.size,
                 color: type.color,
                 xpValue: type.xp,
@@ -1716,6 +1808,18 @@
             }
         }
 
+        function autoRespawnParticles() {
+            if (particles.length < config.particleRespawn.minParticles) {
+                for (let i = 0; i < config.particleRespawn.respawnAmount; i++) {
+                    const p = getParticle();
+                    p.size = 10; // Partículas começam grandes
+                    p.targetSize = p.size; // Tamanho original
+                    particles.push(p);
+                }
+                playSound('respawn');
+            }
+        }
+
         function updateParticles(deltaTime) {
             const player = config.players[0];
             const updatesThisFrame = Math.min(100, particles.length);
@@ -1723,6 +1827,11 @@
             for (let i = 0; i < updatesThisFrame; i++) {
                 const idx = (lastUpdateIndex + i) % particles.length;
                 const p = particles[idx];
+                
+                // Reduz tamanho se for partícula respawnada
+                if (p.size > (p.targetSize || 3)) {
+                    p.size -= 0.1;
+                }
                 
                 // Movimento básico
                 p.x += p.speedX * (deltaTime / 16.67);
@@ -2029,6 +2138,20 @@
             window.addEventListener('keydown', (e) => {
                 if (config.gamePaused) return;
                 
+                const player2 = config.players[1];
+                const speed = 5;
+                
+                // Controles do jogador 2 (WASD)
+                if (config.coopMode && player2.active) {
+                    switch(e.key.toLowerCase()) {
+                        case 'w': player2.y -= speed; break;
+                        case 'a': player2.x -= speed; break;
+                        case 's': player2.y += speed; break;
+                        case 'd': player2.x += speed; break;
+                    }
+                }
+                
+                // Controles do jogador 1 (1-3 e espaço)
                 switch(e.key) {
                     case '1': 
                         config.players[0].mode = 'attract';
@@ -2121,9 +2244,13 @@
             config.players[1].active = config.coopMode;
             
             document.getElementById('coop-status').textContent = config.coopMode ? 'ON' : 'OFF';
-            document.getElementById('mobile-controls-p2').style.display = config.coopMode ? 'flex' : 'none';
-            
             showUnlockMessage(`Modo Cooperativo ${config.coopMode ? 'ativado' : 'desativado'}`);
+            
+            // Posiciona o jogador 2 em uma posição inicial
+            if (config.coopMode) {
+                config.players[1].x = canvas.width * 0.3;
+                config.players[1].y = canvas.height * 0.5;
+            }
         }
 
         function toggleSound() {
@@ -2491,7 +2618,9 @@
                 enemyDefeat: 'https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3',
                 levelUp: 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3',
                 bigBang: 'https://assets.mixkit.co/sfx/preview/mixkit-big-explosion-2814.mp3',
-                gameOver: 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3'
+                gameOver: 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3',
+                respawn: 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3',
+                bossRoar: 'https://assets.mixkit.co/sfx/preview/mixkit-monster-deep-rumble-395.mp3'
             };
 
             // Carrega os sons
@@ -2510,7 +2639,7 @@
             document.getElementById('sound-status').textContent = config.soundEnabled ? 'ON' : 'OFF';
         }
 
-        // 11. MODO HISTÓRIA
+        // 11. MODO HISTÓRIA (COM BOSS CÓSMICO)
         function startStoryMode() {
             if (!config.story.enabled) return;
             
@@ -2528,7 +2657,32 @@
             config.story.currentScene = index;
             const scene = config.story.scenes[index];
             
+            // Configura NPC (Boss ou Aliado)
+            if (scene.effect === "terror") {
+                document.getElementById('boss-npc').style.display = "block";
+                document.getElementById('tentacles-container').style.display = "block";
+                document.getElementById('story-npc').style.display = "none";
+                document.getElementById('story-mode').classList.add("terror");
+                document.querySelector('.story-dialog-box').classList.add("terror");
+            } else {
+                document.getElementById('boss-npc').style.display = "none";
+                document.getElementById('tentacles-container').style.display = "none";
+                document.getElementById('story-npc').style.display = "block";
+                document.getElementById('story-mode').classList.remove("terror");
+                document.querySelector('.story-dialog-box').classList.remove("terror");
+            }
+            
+            // Tremor de tela para cenas intensas
+            if (scene.shake) {
+                document.getElementById('story-mode').classList.add("camera-shake");
+                playSound("bossRoar");
+            } else {
+                document.getElementById('story-mode').classList.remove("camera-shake");
+            }
+            
+            // Atualiza conteúdo
             document.getElementById('story-npc').textContent = scene.npc;
+            document.getElementById('boss-npc').textContent = scene.npc;
             document.getElementById('story-dialog-text').textContent = scene.text;
             document.body.style.background = scene.background;
         }
@@ -2553,14 +2707,39 @@
             
             npcDialog.classList.add("show");
 
-            // Escolhe um diálogo aleatório (exceto o atual)
-            let randomDialog;
-            do {
-                randomDialog = Math.floor(Math.random() * config.npc.dialogs.length);
-            } while (randomDialog === config.npc.currentDialog);
-
-            config.npc.currentDialog = randomDialog;
-            npcText.textContent = config.npc.dialogs[randomDialog];
+            // Diálogos baseados no progresso do jogador
+            let dialog;
+            
+            if (config.level < 5) {
+                // Diálogos para iniciantes
+                dialog = [
+                    "Começando devagar, hein? Não se preocupe, todo mundo foi iniciante um dia...",
+                    "Essas partículas são só o básico, espere até ver o que vem depois!",
+                    "Dica: Partículas coloridas dão mais XP!"
+                ][Math.floor(Math.random() * 3)];
+            }
+            else if (config.level < 15) {
+                // Diálogos intermediários
+                dialog = [
+                    "Começando a pegar o jeito, né? Mas não fique muito confiante...",
+                    "Já percebeu como os inimigos estão ficando mais espertos?",
+                    "O Big Bang está quase ao seu alcance... será que você está pronto?"
+                ][Math.floor(Math.random() * 3)];
+            }
+            else if (config.level < 30) {
+                // Diálogos avançados
+                dialog = [
+                    "Você está indo bem... mas o verdadeiro desafio está por vir!",
+                    "Já notou como o universo muda conforme você avança?",
+                    "Nível 30 é onde a diversão realmente começa..."
+                ][Math.floor(Math.random() * 3)];
+            }
+            else {
+                // Diálogos para especialistas
+                dialog = config.npc.dialogs[Math.floor(Math.random() * config.npc.dialogs.length)];
+            }
+            
+            npcText.textContent = dialog;
 
             // Esconde o diálogo após 5 segundos
             setTimeout(() => {
@@ -2694,7 +2873,7 @@
                     ctx.fill();
                 });
                 
-                // Desenha jogador
+                // Desenha jogador 1
                 const player = config.players[0];
                 ctx.fillStyle = player.color;
                 ctx.beginPath();
@@ -2705,6 +2884,18 @@
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(player.face, player.x, player.y);
+                
+                // Desenha jogador 2 se o modo coop estiver ativo
+                if (config.coopMode && config.players[1].active) {
+                    const player2 = config.players[1];
+                    ctx.fillStyle = player2.color;
+                    ctx.beginPath();
+                    ctx.arc(player2.x, player2.y, player2.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.font = `${player2.faceSize}px Arial`;
+                    ctx.fillText(player2.face, player2.x, player2.y);
+                }
                 
                 // Desenha inimigos
                 enemies.forEach(enemy => {
@@ -2741,7 +2932,7 @@
             }
         }
 
-        // 15. GAME LOOP
+        // 15. GAME LOOP (COM RESPAWN AUTOMÁTICO)
         function gameLoop(timestamp) {
             try {
                 // Calcula deltaTime
@@ -2785,6 +2976,12 @@
                 config.bigBang.cooldown--;
                 updateBigBangCooldownUI();
             }
+            
+            // Verifica respawn de partículas
+            if (config.gameTime % config.particleRespawn.checkInterval === 0) {
+                autoRespawnParticles();
+            }
+            config.gameTime++;
             
             // Atualiza partículas
             updateParticles(deltaTime);
@@ -2847,4 +3044,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
