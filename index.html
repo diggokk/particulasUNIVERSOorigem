@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Universo de Partículas PRO Turbo (Otimizado)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Menu Hamburguer -->
+    <button id="menu-toggle">☰</button>
+    <div id="menu">
+        <h3>Menu do Jogo</h3>
+
+        <div class="menu-section">
+            <h4>Controles</h4>
+            <div class="menu-item" data-action="setMode" data-mode="attract">
+                <span class="menu-icon">🧲</span> 
+                <span class="menu-text">Atração</span>
+                <span class="menu-hotkey">(1)</span>
+            </div>
+            <div class="menu-item" data-action="setMode" data-mode="repel">
+                <span class="menu-icon">💥</span> 
+                <span class="menu-text">Repulsão</span>
+                <span class="menu-hotkey">(2)</span>
+            </div>
+            <div class="menu-item" data-action="setMode" data-mode="vortex">
+                <span class="menu-icon">🌪️</span> 
+                <span class="menu-text">Vórtice</span>
+                <span class="menu-hotkey">(3)</span>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h4>Modos</h4>
+            <div class="menu-item" data-action="toggleCoop">
+                <span class="menu-icon">👥</span> 
+                <span class="menu-text">Modo Cooperativo</span>
+                <span class="menu-status" id="coop-status">OFF</span>
+            </div>
+            <div class="menu-item" data-action="showGalaxies">
+                <span class="menu-icon">🌌</span> 
+                <span class="menu-text">Galáxias</span>
+            </div>
+            <div class="menu-item" data-action="showSkills">
+                <span class="menu-icon">🌟</span> 
+                <span class="menu-text">Habilidades</span>
+            </div>
+            <div class="menu-item" data-action="showSkins">
+                <span class="menu-icon">🎭</span> 
+                <span class="menu-text">Skins</span>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h4>Sistema</h4>
+            <div class="menu-item" data-action="resetGame">
+                <span class="menu-icon">🔄</span> 
+                <span class="menu-text">Reiniciar Jogo</span>
+            </div>
+            <div class="menu-item" data-action="toggleSound">
+                <span class="menu-icon">🔊</span> 
+                <span class="menu-text">Som</span>
+                <span class="menu-status" id="sound-status">ON</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Big Bang -->
+    <div id="bigbang-btn">
+        <span>💥 BIG BANG</span>
+        <div class="cooldown-overlay"></div>
+        <div class="bigbang-level-requirement" id="bigbang-requirement"></div>
+    </div>
+
+    <!-- Controles mobile -->
+    <div class="mobile-controls">
+        <button class="mobile-btn" id="mobileAttract">🧲</button>
+        <button class="mobile-btn" id="mobileRepel">💥</button>
+        <button class="mobile-btn" id="mobileVortex">🌪️</button>
+    </div>
+
+    <!-- Mapa Galáctico -->
+    <div id="galaxy-map">
+        <h2>Mapa Galáctico</h2>
+        <div id="galaxies-list"></div>
+        <button id="close-galaxy-map">Fechar</button>
+    </div>
+
+    <!-- Árvore de Habilidades -->
+    <div id="skill-tree">
+        <h2>Árvore de Habilidades</h2>
+        <div id="skills-list"></div>
+        <button id="close-skill-tree">Fechar</button>
+    </div>
+
+    <!-- Painel de Missões -->
+    <div id="quest-panel" class="quest-panel">
+        <h4>Missões</h4>
+        <div id="quests-container"></div>
+    </div>
+
+    <!-- Painel de Estatísticas -->
+    <div id="stats-panel">
+        <div>Nível: <span id="stat-level">1</span></div>
+        <div>XP: <span id="stat-xp">0/100</span></div>
+        <div>Partículas: <span id="stat-particles">0</span></div>
+        <div>Inimigos: <span id="stat-enemies">0</span></div>
+        <div>Onda: <span id="stat-wave">1</span></div>
+    </div>
+
+    <!-- Elementos de UI -->
+    <div id="fps-counter">FPS: 60</div>
+    <div id="health-bar-container">
+        <div id="health-bar"></div>
+    </div>
+    <div id="xp-bar-container">
+        <div id="xp-bar"></div>
+        <div id="xp-text">0/100 XP (Nível 1)</div>
+    </div>
+    <div id="bigbang-cooldown">
+        <div id="bigbang-progress"></div>
+    </div>
+
+    <!-- Tela de Game Over -->
+    <div id="game-over-screen" class="game-over-screen">
+        <div class="stars" id="game-over-stars"></div>
+        <h1 class="game-over-title">GAME OVER</h1>
+        
+        <div class="game-over-stats">
+            <h2>Estatísticas da Partida</h2>
+            <p>Nível alcançado: <span id="go-level">1</span></p>
+            <p>Onda alcançada: <span id="go-wave">1</span></p>
+            <p>Partículas coletadas: <span id="go-particles">0</span></p>
+            <p>Inimigos derrotados: <span id="go-enemies">0</span></p>
+        </div>
+        
+        <button class="restart-btn" id="restart-btn">Reiniciar Jogo</button>
+    </div>
+
+    <!-- Efeitos do Big Bang -->
+    <div id="big-bang-message" class="big-bang-message">O universo irá recomeçar...</div>
+    <div id="supernova" class="supernova"></div>
+    <div id="shockwave" class="shockwave"></div>
+
+    <!-- Modo História -->
+    <div id="story-mode" class="story-container" style="display:none;">
+        <div class="cutscene">
+            <div class="story-npc" id="story-npc">👁️</div>
+            <div id="boss-npc" class="story-npc">👁️</div>
+            <div id="tentacles-container">
+                <div class="tentacle" style="--i:1;"></div>
+                <div class="tentacle" style="--i:2;"></div>
+                <div class="tentacle" style="--i:3;"></div>
+            </div>
+            <div class="story-dialog-box">
+                <div class="story-dialog-text" id="story-dialog-text"></div>
+                <button class="next-dialog-btn" id="next-dialog-btn">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NPC Fixo -->
+    <div id="cosmic-npc" class="npc-container">
+        <div class="npc-face">👁️</div>
+        <div class="npc-dialog" id="npc-dialog">
+            <span id="npc-text">...</span>
+        </div>
+    </div>
+
+    <!-- Modal de Skins -->
+    <div id="skins-modal" class="skins-modal" style="display:none;">
+        <div class="skins-modal-content">
+            <h2>Selecione sua Skin</h2>
+            <div class="skins-grid" id="skins-grid"></div>
+            <button id="close-skins">Fechar</button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script src="game.js"></script>
+</body>
+</html>
