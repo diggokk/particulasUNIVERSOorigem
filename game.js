@@ -547,7 +547,7 @@ function autoRespawnParticles() {
     if (particles.length < config.particleRespawn.minParticles) {
         for (let i = 0; i < config.particleRespawn.respawnAmount; i++) {
             const p = getParticle();
-            p.size = 10; // Partículas começam grandes
+            p.size = 3; // Partículas começam grandes
             p.targetSize = p.size; // Tamanho original
             particles.push(p);
         }
