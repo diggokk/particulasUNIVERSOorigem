@@ -150,7 +150,7 @@ const config = {
                 chance: 0.3, 
                 speed: 3.0, 
                 behavior: 'hunt', 
-                face: ["https://www.google.com/imgres?q=buraco%20negro&imgurl=https%3A%2F%2Ffly.metroimg.com%2Fupload%2Fq_85%2Cw_700%2Fhttps%3A%2F%2Fuploads.metroimg.com%2Fwp-content%2Fuploads%2F2022%2F11%2F25095819%2Fburaco-negro-6.jpg&imgrefurl=https%3A%2F%2Fwww.metropoles.com%2Fmundo%2Fciencia-e-tecnologia-int%2Fcientistas-criam-buraco-negro-dentro-de-laboratorio-para-provar-teoria&docid=t0pWUha06AweoM&tbnid=gNx5H7iireLtgM&vet=12ahUKEwiD7ZjWuMGPAxVJpJUCHSopKW4QM3oECBgQAA..i&w=700&h=467&hcb=2&ved=2ahUKEwiD7ZjWuMGPAxVJpJUCHSopKW4QM3oECBgQAA", "◉_◉", "⊙_⊙", "⚆_⚆"],
+                face: ["@-@", "◉_◉", "⊙_⊙", "⚆_⚆"],
                 color: '#FF0000',
                 huntRadius: 300
             },
