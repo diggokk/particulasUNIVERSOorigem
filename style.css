@@ -1,7 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    background-image: url(fundo1.svg) ;
     touch-action: manipulation;
     font-family: 'Arial', sans-serif;
     user-select: none;
