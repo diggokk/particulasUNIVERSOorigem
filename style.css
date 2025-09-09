@@ -14,7 +14,7 @@ body {
     width: 30px !important; /* Tamanho fixo */
     height: 30px !important; /* Tamanho fixo */
     border-radius: 50%;
-    background: currentColor;
+    background-image: url(fundo1.svg) ;
     pointer-events: none;
     z-index: 5;
     transform: translate(-15px, -15px); /* Centralização precisa */
